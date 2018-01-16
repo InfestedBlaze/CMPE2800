@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Nicholas Wasylyshyn
+ * January 16, 2018
+ * This program will create a visual display of a grid of blocks.
+ * Left clicking will add a block that can fall.
+ * Right clicking will destroy a block.
+ * Shift-Right clicking will add a non-falling block
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

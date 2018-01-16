@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Nicholas Wasylyshyn
+ * January 16, 2018
+ * This program tests our knowledge of generic typing.
+ * We made 3 generic functions and have the test code displayed
+ * on the console.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
