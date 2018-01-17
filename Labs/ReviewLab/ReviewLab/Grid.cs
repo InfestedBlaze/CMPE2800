@@ -73,8 +73,13 @@ namespace ReviewLab
             //Can't remove a null or reserved block or falling block
             if (grid[inPoint.X, inPoint.Y] != null && !(grid[inPoint.X, inPoint.Y] is RetainerBlock))
             {
-                //Flag for death
-                grid[inPoint.X, inPoint.Y].life = Life.Dying;
+                //Can't remove a block that is currently falling
+                if(!(grid[inPoint.X, inPoint.Y] is FreeBlock) || (grid[inPoint.X, inPoint.Y] as FreeBlock).fall != Fall.Falling)
+                {
+                    //Flag for death
+                    grid[inPoint.X, inPoint.Y].life = Life.Dying;
+                }
+                
             }
         }
 
@@ -124,7 +129,8 @@ namespace ReviewLab
                         //The block can fall
                         else if ((grid[x, y] as FreeBlock).fall == Fall.Still && 
                             y < YLength -1 &&
-                            grid[x, y+1] == null)
+                            grid[x, y+1] == null &&
+                            grid[x,y].life != Life.Dying)
                         {
                             RetainBlockBelow(x, y);
                             (grid[x, y] as FreeBlock).fall = Fall.Falling;
@@ -177,7 +183,7 @@ namespace ReviewLab
                         //Centered point
                         Point point = new Point(x * Size + (Size/2), y * Size + (Size / 2));
                         //If free block, offset the point by Animation state
-                        if (grid[x, y] is FreeBlock)
+                        if (grid[x, y] is FreeBlock && grid[x, y].life != Life.Dying)
                             point.Y += (Size/10) * grid[x,y].AnimationState;
                         
                         //Get our side length, shrunk by death

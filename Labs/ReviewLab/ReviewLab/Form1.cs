@@ -24,9 +24,9 @@ namespace ReviewLab
     {
 
         //Window and block constansts
-        private const int WindowXSize = 1000;
-        private const int WindowYSize = 1000;
-        private const int BlockSize   = 100; //Assumed to be greater than 10
+        private const int WindowXSize = 500;
+        private const int WindowYSize = 500;
+        private const int BlockSize   = 50; //Assumed to be greater than 10
 
         //Canvas to display our grid
         CDrawer canvas = new CDrawer(WindowXSize, WindowYSize, false, true);
@@ -79,7 +79,7 @@ namespace ReviewLab
             //Show the change
             grid.Render(canvas, BlockSize);
             //On the console as well
-            grid.Write();
+            //grid.Write();
         }
     }
 }
