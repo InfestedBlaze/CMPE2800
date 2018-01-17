@@ -180,7 +180,7 @@ namespace ReviewLab
             return Continue;
         }
 
-        //Take in a canvas, draw all of the blocks
+        //Take in a canvas and scale, draw all of the blocks
         public void Render(CDrawer canvas, int Size)
         {
             canvas.Clear();
@@ -189,6 +189,7 @@ namespace ReviewLab
             {
                 for (int y = 0; y < YLength; y++)
                 {
+                    //Ignore nulls and retainer blocks, don't need to render them
                     if (grid[x, y] != null && !(grid[x,y] is RetainerBlock))
                     {
                         //Centered point
@@ -207,7 +208,7 @@ namespace ReviewLab
                             sideLength = (-(Size/10)) * grid[x,y].AnimationState + Size; //Shrink by 10% of size for every AnimationState
                         }
 
-                        //Add every block that isn't null
+                        //Add every block using the point and size we just made
                         canvas.AddCenteredRectangle(point.X, point.Y, sideLength, sideLength, grid[x, y].Colour, 1, Color.Black);
                     }
                 }
