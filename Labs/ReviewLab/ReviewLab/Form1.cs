@@ -30,7 +30,7 @@ namespace ReviewLab
 
         //Canvas to display our grid
         CDrawer canvas = new CDrawer(WindowXSize, WindowYSize, false, true);
-        //Grid
+        //Grid to add our blocks to
         Grid grid = new Grid(WindowXSize/BlockSize, WindowYSize/BlockSize);
         
         public Form1()
@@ -43,7 +43,7 @@ namespace ReviewLab
 
         private void Canvas_MouseLeftClickScaled(Point pos, CDrawer dr)
         {
-            //Scale to our grid
+            //Scale point to our grid
             pos.X /= BlockSize;
             pos.Y /= BlockSize;
 
@@ -55,7 +55,7 @@ namespace ReviewLab
 
         private void Canvas_MouseRightClickScaled(Point pos, CDrawer dr)
         {
-            //Scale to our grid
+            //Scale point to our grid
             pos.X /= BlockSize;
             pos.Y /= BlockSize;
 

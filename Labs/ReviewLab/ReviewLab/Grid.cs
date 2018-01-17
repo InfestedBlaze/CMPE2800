@@ -55,7 +55,7 @@ namespace ReviewLab
             //Make sure that the point is empty, can only place in an empty cell or non reserved cell
             if (grid[inPoint.X, inPoint.Y] == null && !(grid[inPoint.X, inPoint.Y] is RetainerBlock))
             {
-                //Check if shift is pressed. If true, Add a solid block. Else, falling block.
+                //Check if shift was pressed. If true, Add a solid block. Else, falling block.
                 if (Solid)
                 {
                     AddSolidBlock(inPoint);
@@ -116,8 +116,11 @@ namespace ReviewLab
                             grid[x, y + 1] = grid[x, y];
                             //Remove old location
                             KillBlock(x, y);
+                            //The block is no longer falling
                             (grid[x, y+1] as FreeBlock).fall = Fall.Still;
+                            //It resets its animations
                             grid[x, y+1].AnimationState = 0;
+                            //We have done an action
                             Continue = true;
                         }
                         //The block is still falling
@@ -127,14 +130,17 @@ namespace ReviewLab
                             Continue = true;
                         }
                         //The block can fall
-                        else if ((grid[x, y] as FreeBlock).fall == Fall.Still && 
-                            y < YLength -1 &&
-                            grid[x, y+1] == null &&
-                            grid[x,y].life != Life.Dying)
+                        else if ((grid[x, y] as FreeBlock).fall == Fall.Still &&  //The block is currently not falling
+                            y < YLength -1 &&                                     //It isn't on the bottom row of the grid
+                            grid[x, y+1] == null &&                               //The block below it is empty
+                            grid[x,y].life != Life.Dying)                         //The block isn't dying
                         {
+                            //Retain the block for us to fall into
                             RetainBlockBelow(x, y);
+                            //Say that we are falling
                             (grid[x, y] as FreeBlock).fall = Fall.Falling;
-                            Continue = true;
+                            //We have done an action
+                            Continue = true;                                      
                         }
                     }
 
@@ -142,23 +148,27 @@ namespace ReviewLab
                     if (grid[x, y] != null && grid[x, y].life == Life.Dying && grid[x, y].AnimationState == 9) //Animations are over, dead
                     {
                         KillBlock(x, y);
+                        //We have done an action
                         Continue = true;
                     }
                     else if (grid[x,y] != null && grid[x, y].life == Life.Dying && grid[x, y].AnimationState < 9) //Still dying
                     {
                         //Increment animation counter
                         grid[x, y].AnimationState++;
+                        //We have done an action
                         Continue = true;
                     }
                     
                     //Leftover Retainer block--------------------------------
-                    if(y > 0 && (grid[x,y] is RetainerBlock))
+                    if(y > 0 && (grid[x,y] is RetainerBlock)) //We must be below the top row and be a retainer
                     {
                         //If we have a retainer block, and no free block above
                         if(!(grid[x,y-1] is FreeBlock))
                         {
                             //Kill the retainer block
                             KillBlock(x, y);
+                            //We have done an action
+                            Continue = true;
                         }
                     }
                 }
@@ -184,13 +194,13 @@ namespace ReviewLab
                         Point point = new Point(x * Size + (Size/2), y * Size + (Size / 2));
                         //If free block, offset the point by Animation state
                         if (grid[x, y] is FreeBlock && grid[x, y].life != Life.Dying)
-                            point.Y += (Size/10) * grid[x,y].AnimationState;
+                            point.Y += (Size/10) * grid[x,y].AnimationState; //Move down 10% of the size
                         
                         //Get our side length, shrunk by death
                         int sideLength = Size;
                         if (grid[x, y].life == Life.Dying)
                         {
-                            sideLength = (-(Size/10)) * grid[x,y].AnimationState + Size;
+                            sideLength = (-(Size/10)) * grid[x,y].AnimationState + Size; //Shrink by 10% of size for every AnimationState
                         }
 
                         //Add every block that isn't null
@@ -202,6 +212,7 @@ namespace ReviewLab
             canvas.Render();
         }
 
+        //Used for console output. Test code
         public void Write()
         {
             string line;

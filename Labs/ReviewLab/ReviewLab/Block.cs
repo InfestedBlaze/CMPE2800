@@ -25,14 +25,14 @@ namespace ReviewLab
     {
         private Color colour;
         public Color Colour { get { return colour; } protected set { colour = value; } }
-        public Life life = Life.Alive;
-        public byte AnimationState = 0;
+        public Life life = Life.Alive;  //Flag whether or not the block should be removed
+        public byte AnimationState = 0; //The state of our current animation. Number from 0-9
     }
 
     //A block that is able to fall to the next area
     class FreeBlock : Block
     {
-        public Fall fall = Fall.Still;
+        public Fall fall = Fall.Still;  //Flag whether or not the block should fall
         public FreeBlock ()
         {
             Colour = Color.Red;
