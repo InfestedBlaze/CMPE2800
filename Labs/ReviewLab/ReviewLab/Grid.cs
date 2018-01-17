@@ -20,9 +20,10 @@ namespace ReviewLab
 {
     class Grid
     {
-        private Block[,] grid;
-        private int XLength;
-        private int YLength;
+        private Block[,] grid;  //Container for our blocks
+        //Used to avoid querying the grid for its lengths
+        private int XLength;    //X length of grid.
+        private int YLength;    //Y length of grid.
 
         public Grid(int X, int Y)
         {
@@ -70,7 +71,7 @@ namespace ReviewLab
         //This will remove a block at the specified location
         public void RemoveBlock(Point inPoint)
         {
-            //Can't remove a null or reserved block or falling block
+            //Can't remove a null or reserved block
             if (grid[inPoint.X, inPoint.Y] != null && !(grid[inPoint.X, inPoint.Y] is RetainerBlock))
             {
                 //Can't remove a block that is currently falling

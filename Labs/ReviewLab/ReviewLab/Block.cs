@@ -23,7 +23,7 @@ namespace ReviewLab
     //An item in the grid
     abstract class Block
     {
-        private Color colour;
+        private Color colour;           //Colour that the block will be drawn as
         public Color Colour { get { return colour; } protected set { colour = value; } }
         public Life life = Life.Alive;  //Flag whether or not the block should be removed
         public byte AnimationState = 0; //The state of our current animation. Number from 0-9
