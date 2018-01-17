@@ -44,7 +44,7 @@
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "Lab 0: Blocks";
+            this.Text = "Lab 0: Block Fall";
             this.ResumeLayout(false);
 
         }
