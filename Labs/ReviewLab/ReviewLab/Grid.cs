@@ -195,12 +195,15 @@ namespace ReviewLab
                         Point point = new Point(x * Size + (Size/2), y * Size + (Size / 2));
                         //If free block, offset the point by Animation state
                         if (grid[x, y] is FreeBlock && grid[x, y].life != Life.Dying)
-                            point.Y += (Size/10) * grid[x,y].AnimationState; //Move down 10% of the size
+                        {
+                            point.Y += (Size / 10) * grid[x, y].AnimationState; //Move down 1/10 of the size, per AnimationState
+                        }
                         
                         //Get our side length, shrunk by death
                         int sideLength = Size;
                         if (grid[x, y].life == Life.Dying)
                         {
+                            // (-10%) * State + Size
                             sideLength = (-(Size/10)) * grid[x,y].AnimationState + Size; //Shrink by 10% of size for every AnimationState
                         }
 
