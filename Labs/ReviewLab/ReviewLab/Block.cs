@@ -26,7 +26,18 @@ namespace ReviewLab
         private Color colour;           //Colour that the block will be drawn as
         public Color Colour { get { return colour; } protected set { colour = value; } }
         public Life life = Life.Alive;  //Flag whether or not the block should be removed
-        public byte AnimationState = 0; //The state of our current animation. Number from 0-9
+        private byte animationState = 0; //The state of our current animation.
+        public byte AnimationState { get { return animationState; } //Public interface for our animation state. Force between 0-9
+            set
+            {
+                if (value > 9)
+                    value = 9;
+                else if (value < 0)
+                    value = 0;
+
+                animationState = value;
+            }
+        }
     }
 
     //A block that is able to fall to the next area
