@@ -22,7 +22,6 @@ namespace ReviewLab
 {
     public partial class Form1 : Form
     {
-
         //Window and block constansts
         private const int WindowXSize = 800;
         private const int WindowYSize = 600;
