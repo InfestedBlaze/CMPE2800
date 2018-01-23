@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,13 +40,38 @@ namespace ICA3_NicW
             Console.ReadLine();
 
             //Part B
+            Console.Clear();
             //[1]
-
+            string filebits = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop).ToString() + "/junk.txt");
             //[2]
-
+            var lines = (from l in filebits.Split(new char[] { ' ', '\r', '\n', '\t'})
+                        where l.Length > 0
+                        select l).ToList();
             //[3]
-
+            var summed = (from l in lines
+                          group l by l.Sum(c => c)).ToList();
+            summed = (from l in summed
+                      orderby l.Key
+                      select l).ToList();
+            //[4]
+            Console.ForegroundColor = ConsoleColor.Green;
+            foreach(var v in lines)
+            {
+                Console.WriteLine(v);
+            }
             Console.WriteLine();
+            Console.ReadLine();
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            foreach (var sum in summed)
+            {
+                Console.WriteLine("Lines with a sum: " + sum.Key);
+                foreach (var line in sum)
+                {
+                    Console.WriteLine("\t" + line);
+                }
+            }
+            Console.ReadLine();
         }
     }
 }
