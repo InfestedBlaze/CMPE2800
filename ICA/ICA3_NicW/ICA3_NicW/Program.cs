@@ -15,6 +15,7 @@ namespace ICA3_NicW
             List<string> sourcestrings = new List<string>(new string[] { "Caballo", "Gato", "Perro", "Conejo", "Tortuga", "Cangrejo"});
 
             //Part A
+            Console.ForegroundColor = ConsoleColor.Red;
             //[1]
             //Get all the animals with and ASCII value less than 600
             var smallString = (from animal in sourcestrings where animal.Sum(c => c) < 600 select animal).ToList();
@@ -37,10 +38,8 @@ namespace ICA3_NicW
                        select q).ToList();
             objList.ForEach(obj => Console.WriteLine(obj.ToString()));
             Console.WriteLine();
-            Console.ReadLine();
 
             //Part B
-            Console.Clear();
             //[1]
             string filebits = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop).ToString() + "/junk.txt");
             //[2]
@@ -49,28 +48,16 @@ namespace ICA3_NicW
                         select l).ToList();
             //[3]
             var summed = (from l in lines
-                          group l by l.Sum(c => c)).ToList();
-            summed = (from l in summed
-                      orderby l.Key
-                      select l).ToList();
+                          group l by l.Sum(c => c)
+                          into m
+                          orderby m.Key
+                          select m).ToList();
             //[4]
             Console.ForegroundColor = ConsoleColor.Green;
-            foreach(var v in lines)
-            {
-                Console.WriteLine(v);
-            }
-            Console.WriteLine();
-            Console.ReadLine();
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            foreach (var sum in summed)
-            {
-                Console.WriteLine("Lines with a sum: " + sum.Key);
-                foreach (var line in sum)
-                {
-                    Console.WriteLine("\t" + line);
-                }
-            }
+            Console.WriteLine($"Lowest ASCII sum: {summed.First().Key }");
+            Console.WriteLine($"Lowest string {summed.First().Min()}");
+            Console.WriteLine($"Highest ASCII sum: {summed.Last().Key}");
+            Console.WriteLine($"Lowest string {summed.Last().Max()}/{new string(summed.Last().Max().OrderBy(c=>c).ToArray())}");
             Console.ReadLine();
         }
     }
