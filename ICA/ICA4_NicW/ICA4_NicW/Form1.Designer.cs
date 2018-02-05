@@ -29,11 +29,28 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this.timer_25ms = new System.Windows.Forms.Timer(this.components);
+            this.SuspendLayout();
+            // 
+            // timer_25ms
+            // 
+            this.timer_25ms.Enabled = true;
+            this.timer_25ms.Interval = 25;
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "Form1";
+            this.Text = "Pointy Pixel Penetration";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer timer_25ms;
     }
 }
 
