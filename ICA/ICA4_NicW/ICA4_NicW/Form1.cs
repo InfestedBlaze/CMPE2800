@@ -90,5 +90,14 @@ namespace ICA4_NicW
             // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
             return (float)Math.Sqrt( Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
         }
+
+        private bool Intersect(BaseShape arg1, BaseShape arg2)
+        {
+            Region regArg1, regArg2;
+
+            regArg1 = new Region(arg1.GetPath());
+            regArg2 = new Region(arg2.GetPath());
+            
+        }
     }
 }

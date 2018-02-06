@@ -25,7 +25,7 @@ namespace ICA4_NicW
         public PointF Position { get; protected set; }
 
         //Methods
-        abstract protected GraphicsPath GetPath();
+        abstract public GraphicsPath GetPath();
 
         public void Render(Color FillColor, Graphics canvas)
         {
@@ -69,23 +69,23 @@ namespace ICA4_NicW
             if (Position.X + XSpeed - TILESIZE < 0)
             {
                 XSpeed *= -1;
-                Position.X = TILESIZE;
+                Position = new PointF(TILESIZE, Position.Y);
             }
             else if (Position.X + XSpeed + TILESIZE > canvSize.Width)
             {
                 XSpeed *= -1;
-                Position.X = canvSize.Width - TILESIZE;
+                Position = new PointF(canvSize.Width - TILESIZE, Position.Y);
             }
             //We would go outside the vertical window
             if (Position.Y + YSpeed - TILESIZE < 0)
             {
                 YSpeed *= -1;
-                Position.Y = TILESIZE;
+                Position = new PointF(Position.X, TILESIZE);
             }
             else if (Position.Y + YSpeed + TILESIZE > canvSize.Height)
             {
                 YSpeed *= -1;
-                Position.Y = canvSize.Height - TILESIZE;
+                Position = new PointF(Position.X, canvSize.Height - TILESIZE);
             }
             //Translate our object
             float x = Position.X + XSpeed;
@@ -117,7 +117,7 @@ namespace ICA4_NicW
         static readonly GraphicsPath model;
 
         //How to get a copy our unchangeable model with appropriate transforms
-        protected override GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             //Make the transform
             Matrix mat = new Matrix();
@@ -146,7 +146,7 @@ namespace ICA4_NicW
         readonly GraphicsPath model;
 
         //How to get a copy our unchangeable model with appropriate transforms
-        protected override GraphicsPath GetPath()
+        public override GraphicsPath GetPath()
         {
             //Make the transform
             Matrix mat = new Matrix();
