@@ -15,7 +15,7 @@ namespace ICA4_NicW
         protected float rotIncrement;
         protected float XSpeed;
         protected float YSpeed;
-        public const int TILESIZE = 50;
+        public const int TILESIZE = 50; //Scale of our models---------------------------------------
 
         //Static members
         static protected Random randNum;
@@ -47,8 +47,8 @@ namespace ICA4_NicW
                 theta = (Math.PI * 2 / points) * i;
                 //Find our point
                 PointF temp = new PointF();
-                temp.X = (float)(Math.Cos(theta) * radius * (variance + randNum.NextDouble() * 0.2)); //Variance can have up to 0.2 added to it.
-                temp.Y = (float)(Math.Sin(theta) * radius * (variance + randNum.NextDouble() * 0.2));
+                temp.X = (float)(Math.Cos(theta) * (radius - randNum.NextDouble() * variance)); //Radius is decreased by a random amount determined by the variance
+                temp.Y = (float)(Math.Sin(theta) * (radius - randNum.NextDouble() * variance));
                 //Put our point into our array
                 outputPoints[i] = temp;
             }
@@ -122,7 +122,7 @@ namespace ICA4_NicW
         static Triangle()
         {
             //Make the triangle model
-            model = ShapeBase(3, TILESIZE, 1.0f);
+            model = ShapeBase(3, TILESIZE, 0);
         }
     }
 
@@ -147,7 +147,7 @@ namespace ICA4_NicW
         //Constructor
         public Asteroid(PointF inPoint) : base(inPoint)
         {
-            this.model = ShapeBase(randNum.Next(4,12), TILESIZE, 0.8f);
+            this.model = ShapeBase(randNum.Next(4,12), TILESIZE, 0.2f);
         }
     }
 }
