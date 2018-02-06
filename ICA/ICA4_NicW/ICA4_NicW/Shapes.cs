@@ -15,25 +15,24 @@ namespace ICA4_NicW
         protected float rotIncrement;
         protected float XSpeed;
         protected float YSpeed;
-        public const int TILESIZE = 50; //Scale of our models---------------------------------------
+        protected PointF Position;
+        protected const int TILESIZE = 50; //Scale of our models---------------------------------------
 
         //Static members
         static protected Random randNum;
-
-        //Fields
+        
+        //Properties
         public bool IsMarkedForDeath { get; set; }
-        public PointF Position { get; set; }
-
         //Methods
         abstract protected GraphicsPath GetPath();
 
         public void Render(Color FillColor, Graphics canvas)
         {
             //Draw the model, fully filled in, with the input colour
-            canvas.DrawPath(new Pen(new SolidBrush(FillColor)), GetPath());
+            canvas.FillPath(new SolidBrush(FillColor), GetPath());
         }
 
-        static protected GraphicsPath ShapeBase(int points, int radius, float variance)
+        static protected GraphicsPath GenerateShape(int points, int radius, float variance)
         {
             //Our outputted graphics path
             PointF[] outputPoints = new PointF[points];
@@ -66,15 +65,16 @@ namespace ICA4_NicW
             rotation += rotIncrement;
 
             //We would go outside the horizontal window
-            if (Position.X + XSpeed + TILESIZE < 0 || Position.X + XSpeed + TILESIZE > canvSize.Width)
+            if (Position.X + XSpeed - TILESIZE < 0 || Position.X + XSpeed + TILESIZE > canvSize.Width)
             {
                 XSpeed *= -1;
             }
             //We would go outside the vertical window
-            if (Position.Y + YSpeed + TILESIZE < 0 || Position.Y + YSpeed + TILESIZE > canvSize.Height)
+            if (Position.Y + YSpeed - TILESIZE < 0 || Position.Y + YSpeed + TILESIZE > canvSize.Height)
             {
                 YSpeed *= -1;
             }
+
             //Translate our object
             float x = Position.X + XSpeed;
             float y = Position.Y + YSpeed;
@@ -87,7 +87,7 @@ namespace ICA4_NicW
             Position = inPoint;
 
             rotation = 0;
-            rotIncrement = randNum.Next(-3, 3);
+            rotIncrement = (float)(randNum.NextDouble() * 6 - 3);
 
             XSpeed = (float)(randNum.NextDouble() * 5 - 2.5);
             YSpeed = (float)(randNum.NextDouble() * 5 - 2.5);
@@ -101,14 +101,16 @@ namespace ICA4_NicW
 
     class Triangle : BaseShape
     {
+        //Our unchangeable model
         static readonly GraphicsPath model;
 
+        //How to get a copy our unchangeable model with appropriate transforms
         protected override GraphicsPath GetPath()
         {
             //Make the transform
             Matrix mat = new Matrix();
             mat.Rotate(this.rotation);
-            mat.Translate(this.XSpeed, this.YSpeed, MatrixOrder.Append);
+            mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
             //Clone the model and apply the transform
             GraphicsPath temp = (model.Clone() as GraphicsPath);
             temp.Transform(mat);
@@ -122,7 +124,7 @@ namespace ICA4_NicW
         static Triangle()
         {
             //Make the triangle model
-            model = ShapeBase(3, TILESIZE, 0);
+            model = GenerateShape(3, TILESIZE, 0);
         }
     }
 
@@ -137,7 +139,7 @@ namespace ICA4_NicW
             //Make the transform
             Matrix mat = new Matrix();
             mat.Rotate(this.rotation);
-            mat.Translate(this.XSpeed, this.YSpeed, MatrixOrder.Append);
+            mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
             //Clone the model and apply the transform
             GraphicsPath temp = (model.Clone() as GraphicsPath);
             temp.Transform(mat);
@@ -147,7 +149,7 @@ namespace ICA4_NicW
         //Constructor
         public Asteroid(PointF inPoint) : base(inPoint)
         {
-            this.model = ShapeBase(randNum.Next(4,12), TILESIZE, 0.2f);
+            this.model = GenerateShape(randNum.Next(4,12), TILESIZE, TILESIZE - 10);
         }
     }
 }

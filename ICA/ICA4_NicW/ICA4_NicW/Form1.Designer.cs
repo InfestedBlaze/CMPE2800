@@ -36,6 +36,7 @@
             // 
             this.timer_25ms.Enabled = true;
             this.timer_25ms.Interval = 25;
+            this.timer_25ms.Tick += new System.EventHandler(this.timer_25ms_Tick);
             // 
             // Form1
             // 
@@ -44,6 +45,7 @@
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "Form1";
             this.Text = "Pointy Pixel Penetration";
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.ResumeLayout(false);
 
         }
