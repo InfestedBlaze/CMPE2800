@@ -15,7 +15,6 @@ namespace ICA4_NicW
         protected float rotIncrement;
         protected float XSpeed;
         protected float YSpeed;
-        protected PointF Position;
         protected const int TILESIZE = 50; //Scale of our models---------------------------------------
 
         //Static members
@@ -23,6 +22,8 @@ namespace ICA4_NicW
         
         //Properties
         public bool IsMarkedForDeath { get; set; }
+        public PointF Position { get; protected set; }
+
         //Methods
         abstract protected GraphicsPath GetPath();
 
@@ -46,8 +47,8 @@ namespace ICA4_NicW
                 theta = (Math.PI * 2 / points) * i;
                 //Find our point
                 PointF temp = new PointF();
-                temp.X = (float)(Math.Cos(theta) * (radius - randNum.NextDouble() * variance)); //Radius is decreased by a random amount determined by the variance
-                temp.Y = (float)(Math.Sin(theta) * (radius - randNum.NextDouble() * variance));
+                temp.X = (float)(Math.Cos(theta) * (radius - randNum.NextDouble() * (radius * variance))); //Radius is decreased by a random amount determined by the variance
+                temp.Y = (float)(Math.Sin(theta) * (radius - randNum.NextDouble() * (radius * variance)));
                 //Put our point into our array
                 outputPoints[i] = temp;
             }
@@ -65,16 +66,27 @@ namespace ICA4_NicW
             rotation += rotIncrement;
 
             //We would go outside the horizontal window
-            if (Position.X + XSpeed - TILESIZE < 0 || Position.X + XSpeed + TILESIZE > canvSize.Width)
+            if (Position.X + XSpeed - TILESIZE < 0)
             {
                 XSpeed *= -1;
+                Position.X = TILESIZE;
+            }
+            else if (Position.X + XSpeed + TILESIZE > canvSize.Width)
+            {
+                XSpeed *= -1;
+                Position.X = canvSize.Width - TILESIZE;
             }
             //We would go outside the vertical window
-            if (Position.Y + YSpeed - TILESIZE < 0 || Position.Y + YSpeed + TILESIZE > canvSize.Height)
+            if (Position.Y + YSpeed - TILESIZE < 0)
             {
                 YSpeed *= -1;
+                Position.Y = TILESIZE;
             }
-
+            else if (Position.Y + YSpeed + TILESIZE > canvSize.Height)
+            {
+                YSpeed *= -1;
+                Position.Y = canvSize.Height - TILESIZE;
+            }
             //Translate our object
             float x = Position.X + XSpeed;
             float y = Position.Y + YSpeed;
@@ -149,7 +161,7 @@ namespace ICA4_NicW
         //Constructor
         public Asteroid(PointF inPoint) : base(inPoint)
         {
-            this.model = GenerateShape(randNum.Next(4,12), TILESIZE, TILESIZE - 10);
+            this.model = GenerateShape(randNum.Next(4,12), TILESIZE, 0.7f);
         }
     }
 }

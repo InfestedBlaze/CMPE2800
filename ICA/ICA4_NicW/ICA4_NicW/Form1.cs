@@ -28,10 +28,6 @@ namespace ICA4_NicW
             {
                 using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
                 {
-                    //Flip our y Axis
-                    Matrix mat = new Matrix(1, 0, 0, -1, 0, 0);
-                    //bg.Graphics.Transform = mat;
-
                     //Clear our form of shapes
                     bg.Graphics.Clear(Color.Black);
 
@@ -87,6 +83,12 @@ namespace ICA4_NicW
                     shapeList.Add(new Asteroid(e.Location));
                 }
             }
+        }
+
+        private float GetDistance(BaseShape arg1, BaseShape arg2)
+        {
+            // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
+            return (float)Math.Sqrt( Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
         }
     }
 }
