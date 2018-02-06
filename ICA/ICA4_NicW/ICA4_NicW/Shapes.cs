@@ -15,7 +15,7 @@ namespace ICA4_NicW
         protected float rotIncrement;
         protected float XSpeed;
         protected float YSpeed;
-        protected const int TILESIZE = 50; //Scale of our models---------------------------------------
+        public const int TILESIZE = 50; //Scale of our models---------------------------------------
 
         //Static members
         static protected Random randNum;

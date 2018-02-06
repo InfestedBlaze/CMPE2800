@@ -8,18 +8,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ICA4_NicW
 {
+    struct timeStampRegion
+    {
+        public Region region;
+        public long timestamp;
+
+        public timeStampRegion(Region inRegion, long time)
+        {
+            region = inRegion;
+            timestamp = time;
+        }
+    }
+
     public partial class Form1 : Form
     {
         List<BaseShape> shapeList = new List<BaseShape>();
-        LinkedList<Region> collisions = new LinkedList<Region>();
+        LinkedList<timeStampRegion> collisions = new LinkedList<timeStampRegion>();
         Random randNum = new Random();
+        Stopwatch sw = new Stopwatch();
 
         public Form1()
         {
             InitializeComponent();
+            sw.Restart();
         }
 
         private void timer_25ms_Tick(object sender, EventArgs e)
@@ -36,6 +51,43 @@ namespace ICA4_NicW
 
                     //Put our shapes on the screen
                     shapeList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
+
+                    //Put our intersections on the screen
+                    foreach(timeStampRegion r in collisions)
+                    {
+                        bg.Graphics.DrawRectangles(new Pen(new SolidBrush(Color.DarkBlue)), r.region.GetRegionScans(new Matrix()));
+                    }
+
+                    foreach(timeStampRegion r in collisions.ToList())
+                    {
+                        if(r.timestamp + 2500 < sw.ElapsedMilliseconds)
+                        {
+                            collisions.Remove(r);
+                        }
+                    }
+
+                    //Find intersections
+                    foreach(BaseShape currentShape in shapeList)
+                    {
+                        foreach(BaseShape checkShape in shapeList)
+                        {
+                            //Must be within a good distance to check, and not itself
+                            if (GetDistance(currentShape, checkShape) < BaseShape.TILESIZE * 2 &&
+                                !ReferenceEquals(currentShape, checkShape))
+                            {
+                                Region intersection = new Region(currentShape.GetPath());
+                                intersection.Intersect(new Region(checkShape.GetPath()));
+
+                                if (intersection.GetRegionScans(new Matrix()).Length > 0)
+                                {
+                                    currentShape.IsMarkedForDeath = true;
+                                    checkShape.IsMarkedForDeath = true;
+
+                                    collisions.AddLast(new timeStampRegion(intersection, sw.ElapsedMilliseconds));
+                                }
+                            }
+                        }
+                    }
 
                     //Remove all the shapes that are marked for death
                     shapeList.RemoveAll(shape => shape.IsMarkedForDeath);
@@ -89,15 +141,6 @@ namespace ICA4_NicW
         {
             // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
             return (float)Math.Sqrt( Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
-        }
-
-        private bool Intersect(BaseShape arg1, BaseShape arg2)
-        {
-            Region regArg1, regArg2;
-
-            regArg1 = new Region(arg1.GetPath());
-            regArg2 = new Region(arg2.GetPath());
-            
         }
     }
 }
