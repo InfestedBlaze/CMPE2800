@@ -50,7 +50,14 @@ namespace ICA4_NicW
                     shapeList.ForEach(shape => shape.Tick(ClientSize));
 
                     //Put our shapes on the screen
-                    shapeList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
+                    shapeList.ForEach(shape =>
+                    {
+                        //Triangles are orange, asteroids are yellow
+                        if (shape is Triangle)
+                            shape.Render(Color.Orange, bg.Graphics);
+                        else
+                            shape.Render(Color.Yellow, bg.Graphics);
+                    });
 
                     //Put our intersections on the screen
                     foreach(timeStampRegion r in collisions)
