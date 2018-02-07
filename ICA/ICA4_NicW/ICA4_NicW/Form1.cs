@@ -62,7 +62,7 @@ namespace ICA4_NicW
                     //Put our intersections on the screen
                     foreach(timeStampRegion r in collisions)
                     {
-                        bg.Graphics.DrawRectangles(new Pen(new SolidBrush(Color.DarkBlue)), r.region.GetRegionScans(new Matrix()));
+                        bg.Graphics.FillRectangles(new SolidBrush(Color.DarkBlue), r.region.GetRegionScans(new Matrix()));
                     }
 
                     foreach(timeStampRegion r in collisions.ToList())
@@ -76,21 +76,27 @@ namespace ICA4_NicW
                     //Find intersections
                     foreach(BaseShape currentShape in shapeList)
                     {
+                        //Our region that we want to keep for every check against the inner list
+                        Region outerRegion = new Region(currentShape.GetPath());
+
                         foreach(BaseShape checkShape in shapeList)
                         {
                             //Must be within a good distance to check, and not itself
                             if (GetDistance(currentShape, checkShape) < BaseShape.TILESIZE * 2 &&
                                 !ReferenceEquals(currentShape, checkShape))
                             {
-                                Region intersection = new Region(currentShape.GetPath());
-                                intersection.Intersect(new Region(checkShape.GetPath()));
+                                //Get our intersection region
+                                Region innerRegion = new Region(checkShape.GetPath());
+                                innerRegion.Intersect(outerRegion);
 
-                                if (intersection.GetRegionScans(new Matrix()).Length > 0)
+                                //Check if we intersected
+                                if (innerRegion.GetRegionScans(new Matrix()).Length > 0)
                                 {
+                                    //Delete the intersecting shapes
                                     currentShape.IsMarkedForDeath = true;
                                     checkShape.IsMarkedForDeath = true;
-
-                                    collisions.AddLast(new timeStampRegion(intersection, sw.ElapsedMilliseconds));
+                                    //Add it to our collision history
+                                    collisions.AddLast(new timeStampRegion(innerRegion, sw.ElapsedMilliseconds));
                                 }
                             }
                         }
@@ -148,6 +154,12 @@ namespace ICA4_NicW
         {
             // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
             return (float)Math.Sqrt( Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //Make sure our screen is big enough for the shapes
+            MinimumSize = new Size(BaseShape.TILESIZE * 3, BaseShape.TILESIZE * 3);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace ICA4_NicW
         protected float rotIncrement;
         protected float XSpeed;
         protected float YSpeed;
-        public const int TILESIZE = 50; //Scale of our models---------------------------------------
+        public const int TILESIZE = 7; //Scale of our models---------------------------------------
 
         //Static members
         static protected Random randNum;
@@ -47,8 +47,8 @@ namespace ICA4_NicW
                 theta = (Math.PI * 2 / points) * i;
                 //Find our point
                 PointF temp = new PointF();
-                temp.X = (float)(Math.Cos(theta) * (radius - randNum.NextDouble() * (radius * variance))); //Radius is decreased by a random amount determined by the variance
-                temp.Y = (float)(Math.Sin(theta) * (radius - randNum.NextDouble() * (radius * variance)));
+                temp.X = (float)(Math.Cos(theta) * (radius - randNum.NextDouble() * radius * variance)); //Radius is decreased by a random amount determined by the variance
+                temp.Y = (float)(Math.Sin(theta) * (radius - randNum.NextDouble() * radius * variance));
                 //Put our point into our array
                 outputPoints[i] = temp;
             }
@@ -66,26 +66,26 @@ namespace ICA4_NicW
             rotation += rotIncrement;
 
             //We would go outside the horizontal window
-            if (Position.X + XSpeed - TILESIZE < 0)
+            if (Position.X + XSpeed < 0)
             {
                 XSpeed *= -1;
-                Position = new PointF(TILESIZE, Position.Y);
+                Position = new PointF(0, Position.Y);
             }
-            else if (Position.X + XSpeed + TILESIZE > canvSize.Width)
+            else if (Position.X + XSpeed > canvSize.Width)
             {
                 XSpeed *= -1;
-                Position = new PointF(canvSize.Width - TILESIZE, Position.Y);
+                Position = new PointF(canvSize.Width, Position.Y);
             }
             //We would go outside the vertical window
-            if (Position.Y + YSpeed - TILESIZE < 0)
+            if (Position.Y + YSpeed < 0)
             {
                 YSpeed *= -1;
-                Position = new PointF(Position.X, TILESIZE);
+                Position = new PointF(Position.X, 0);
             }
-            else if (Position.Y + YSpeed + TILESIZE > canvSize.Height)
+            else if (Position.Y + YSpeed > canvSize.Height)
             {
                 YSpeed *= -1;
-                Position = new PointF(Position.X, canvSize.Height - TILESIZE);
+                Position = new PointF(Position.X, canvSize.Height);
             }
             //Translate our object
             float x = Position.X + XSpeed;
