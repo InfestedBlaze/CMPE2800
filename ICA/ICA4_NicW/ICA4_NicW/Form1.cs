@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * Nicholas Wasylyshyn
+ * February 7, 2018
+ * This program builds our knowledge of how the GDI
+ * is used and how to implement it.
+ * We create graphics paths to create random and fixed
+ * models. Have them rotate and translate across our form.
+ * Left and right clicking will create a model. Shift clicking
+ * will create 1000 objects in random places within the 
+ * area of our form.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,6 +24,9 @@ using System.Diagnostics;
 
 namespace ICA4_NicW
 {
+    //This struct is used to store collisions between shapes.
+    //They have a region which we draw on the screen and a
+    //timestamp that tells us when they were made.
     struct timeStampRegion
     {
         public Region region;
@@ -26,15 +41,17 @@ namespace ICA4_NicW
 
     public partial class Form1 : Form
     {
+        //This is our list of shapes
         List<BaseShape> shapeList = new List<BaseShape>();
+        //Our collisions between shapes
         LinkedList<timeStampRegion> collisions = new LinkedList<timeStampRegion>();
+        //Random numbers and a stopwatch
         Random randNum = new Random();
         Stopwatch sw = new Stopwatch();
 
         public Form1()
         {
             InitializeComponent();
-            sw.Restart();
         }
 
         private void timer_25ms_Tick(object sender, EventArgs e)
@@ -62,9 +79,10 @@ namespace ICA4_NicW
                     //Put our intersections on the screen
                     foreach(timeStampRegion r in collisions)
                     {
-                        bg.Graphics.FillRectangles(new SolidBrush(Color.DarkBlue), r.region.GetRegionScans(new Matrix()));
+                        bg.Graphics.FillRegion(new SolidBrush(Color.DarkBlue), r.region);
                     }
 
+                    //Remove collisions that are more than 2.5 seconds old
                     foreach(timeStampRegion r in collisions.ToList())
                     {
                         if(r.timestamp + 2500 < sw.ElapsedMilliseconds)
@@ -160,6 +178,8 @@ namespace ICA4_NicW
         {
             //Make sure our screen is big enough for the shapes
             MinimumSize = new Size(BaseShape.TILESIZE * 3, BaseShape.TILESIZE * 3);
+            //Get the stop watch started
+            sw.Restart();
         }
     }
 }

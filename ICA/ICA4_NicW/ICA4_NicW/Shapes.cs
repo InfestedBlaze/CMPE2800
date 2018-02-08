@@ -1,4 +1,16 @@
-﻿using System;
+﻿/*
+ * Nicholas Wasylyshyn
+ * February 7, 2018
+ * This program builds our knowledge of how the GDI
+ * is used and how to implement it.
+ * We create graphics paths to create random and fixed
+ * models. Have them rotate and translate across our form.
+ * Left and right clicking will create a model. Shift clicking
+ * will create 1000 objects in random places within the 
+ * area of our form.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,28 +23,32 @@ namespace ICA4_NicW
     abstract class BaseShape
     {
         //Members
-        protected float rotation;
-        protected float rotIncrement;
-        protected float XSpeed;
-        protected float YSpeed;
-        public const int TILESIZE = 7; //Scale of our models---------------------------------------
+        protected float rotation;       //Current angle
+        protected float rotIncrement;   //Rotation speed
+        protected float XSpeed;         //Horizontal speed
+        protected float YSpeed;         //Vertical speed
+        public const int TILESIZE = 50; //Scale
 
         //Static members
-        static protected Random randNum;
+        static protected Random randNum; //Random number generator
         
         //Properties
-        public bool IsMarkedForDeath { get; set; }
-        public PointF Position { get; protected set; }
+        public bool IsMarkedForDeath { get; set; }      //Whether we should kill the model
+        public PointF Position { get; protected set; }  //Current position on the form
 
         //Methods
+
+        //Get the graphics path of the shape
         abstract public GraphicsPath GetPath();
 
+        //Draw the shape on the inputted canvas
         public void Render(Color FillColor, Graphics canvas)
         {
             //Draw the model, fully filled in, with the input colour
             canvas.FillPath(new SolidBrush(FillColor), GetPath());
         }
 
+        //Create a shape with a certain number of points, radius, and random change in radius.
         static protected GraphicsPath GenerateShape(int points, int radius, float variance)
         {
             //Our outputted graphics path
@@ -60,6 +76,7 @@ namespace ICA4_NicW
             return output;
         }
 
+        //Cause this shape to rotate and move by its incremental values
         public void Tick(Size canvSize)
         {
             //Rotate our object
