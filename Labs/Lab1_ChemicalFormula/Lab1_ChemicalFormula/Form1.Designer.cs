@@ -49,7 +49,7 @@
             this.UI_dataGridView_Chemicals.Location = new System.Drawing.Point(13, 13);
             this.UI_dataGridView_Chemicals.Name = "UI_dataGridView_Chemicals";
             this.UI_dataGridView_Chemicals.Size = new System.Drawing.Size(480, 355);
-            this.UI_dataGridView_Chemicals.TabIndex = 0;
+            this.UI_dataGridView_Chemicals.TabIndex = 5;
             // 
             // UI_button_SortName
             // 
@@ -57,7 +57,7 @@
             this.UI_button_SortName.Location = new System.Drawing.Point(499, 12);
             this.UI_button_SortName.Name = "UI_button_SortName";
             this.UI_button_SortName.Size = new System.Drawing.Size(123, 23);
-            this.UI_button_SortName.TabIndex = 1;
+            this.UI_button_SortName.TabIndex = 0;
             this.UI_button_SortName.Text = "Sort by Name";
             this.UI_button_SortName.UseVisualStyleBackColor = true;
             this.UI_button_SortName.Click += new System.EventHandler(this.UI_button_SortName_Click);
@@ -68,7 +68,7 @@
             this.UI_button_SingleCharacter.Location = new System.Drawing.Point(500, 42);
             this.UI_button_SingleCharacter.Name = "UI_button_SingleCharacter";
             this.UI_button_SingleCharacter.Size = new System.Drawing.Size(122, 23);
-            this.UI_button_SingleCharacter.TabIndex = 2;
+            this.UI_button_SingleCharacter.TabIndex = 1;
             this.UI_button_SingleCharacter.TabStop = false;
             this.UI_button_SingleCharacter.Text = "Single Character Symbols";
             this.UI_button_SingleCharacter.UseVisualStyleBackColor = true;
@@ -80,7 +80,7 @@
             this.UI_button_SortAtomic.Location = new System.Drawing.Point(500, 72);
             this.UI_button_SortAtomic.Name = "UI_button_SortAtomic";
             this.UI_button_SortAtomic.Size = new System.Drawing.Size(122, 23);
-            this.UI_button_SortAtomic.TabIndex = 3;
+            this.UI_button_SortAtomic.TabIndex = 2;
             this.UI_button_SortAtomic.Text = "Sort by Atomic #";
             this.UI_button_SortAtomic.UseVisualStyleBackColor = true;
             this.UI_button_SortAtomic.Click += new System.EventHandler(this.UI_button_SortAtomic_Click);
@@ -97,11 +97,12 @@
             // 
             // UI_textBox_ChemFormula
             // 
-            this.UI_textBox_ChemFormula.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.UI_textBox_ChemFormula.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.UI_textBox_ChemFormula.Location = new System.Drawing.Point(108, 379);
             this.UI_textBox_ChemFormula.Name = "UI_textBox_ChemFormula";
-            this.UI_textBox_ChemFormula.Size = new System.Drawing.Size(190, 20);
-            this.UI_textBox_ChemFormula.TabIndex = 4;
+            this.UI_textBox_ChemFormula.Size = new System.Drawing.Size(279, 20);
+            this.UI_textBox_ChemFormula.TabIndex = 3;
             this.UI_textBox_ChemFormula.TextChanged += new System.EventHandler(this.UI_textBox_ChemFormula_TextChanged);
             // 
             // UI_label_MMass
@@ -121,7 +122,7 @@
             this.UI_label_MassCalculation.Location = new System.Drawing.Point(499, 376);
             this.UI_label_MassCalculation.Name = "UI_label_MassCalculation";
             this.UI_label_MassCalculation.Size = new System.Drawing.Size(123, 23);
-            this.UI_label_MassCalculation.TabIndex = 5;
+            this.UI_label_MassCalculation.TabIndex = 4;
             this.UI_label_MassCalculation.Text = "0 g/mol";
             this.UI_label_MassCalculation.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 

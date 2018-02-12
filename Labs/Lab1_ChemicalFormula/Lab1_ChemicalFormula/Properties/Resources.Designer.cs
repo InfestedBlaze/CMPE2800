@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Lab1_ChemicalFormula.Properties
-{
-
-
+namespace Lab1_ChemicalFormula.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -19,52 +19,75 @@ namespace Lab1_ChemicalFormula.Properties
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources
-    {
-
+    internal class Resources {
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources()
-        {
+        internal Resources() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
-                if ((resourceMan == null))
-                {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Lab1_ChemicalFormula.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1 Hydrogen H 1.00794
+        ///2 Helium He 4.002602
+        ///3 Lithium Li 6.941
+        ///4 Beryllium Be 9.012182
+        ///5 Boron B 10.811
+        ///6 Carbon C 12.011
+        ///7 Nitrogen N 14.00674
+        ///8 Oxygen O 15.9994
+        ///9 Fluorine F 18.9984032
+        ///10 Neon Ne 20.1797
+        ///11 Sodium Na 22.989768
+        ///12 Magnesium Mg 24.3050
+        ///13 Aluminum Al 26.981539
+        ///14 Silicon Si 28.0855
+        ///15 Phosphorus P 30.973762
+        ///16 Sulfur S 32.066
+        ///17 Chlorine Cl 35.4527
+        ///18 Argon Ar 39.948
+        ///19 Potassium K 39.0983
+        ///20 Calcium Ca 40.078
+        ///21 Scandlum Sc 44.955910
+        ///22 Titanium Ti 47.867
+        ///23 Vanadium V  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string elements {
+            get {
+                return ResourceManager.GetString("elements", resourceCulture);
             }
         }
     }
