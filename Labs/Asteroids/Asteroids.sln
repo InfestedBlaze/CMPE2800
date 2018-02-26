@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputControls", "InputControls\InputControls.csproj", "{652542F2-DCED-4ACE-9695-579B5FA7FD66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProofOfConcept", "ProofOfConcept\ProofOfConcept.csproj", "{BF6DE46B-9F2E-4AA4-9688-EBE79096EDEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{652542F2-DCED-4ACE-9695-579B5FA7FD66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{652542F2-DCED-4ACE-9695-579B5FA7FD66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{652542F2-DCED-4ACE-9695-579B5FA7FD66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{652542F2-DCED-4ACE-9695-579B5FA7FD66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF6DE46B-9F2E-4AA4-9688-EBE79096EDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF6DE46B-9F2E-4AA4-9688-EBE79096EDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF6DE46B-9F2E-4AA4-9688-EBE79096EDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF6DE46B-9F2E-4AA4-9688-EBE79096EDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B70FE38-C644-4363-AF73-B02E9DAB1D36}
+	EndGlobalSection
+EndGlobal
