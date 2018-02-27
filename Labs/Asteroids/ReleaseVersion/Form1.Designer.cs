@@ -28,7 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            this.timer_Game = new System.Windows.Forms.Timer(this.components);
+            this.timer_Spawn = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
+            // 
+            // timer_Game
+            // 
+            this.timer_Game.Enabled = true;
+            this.timer_Game.Interval = 25;
+            this.timer_Game.Tick += new System.EventHandler(this.timer_Game_Tick);
+            // 
+            // timer_Spawn
+            // 
+            this.timer_Spawn.Enabled = true;
+            this.timer_Spawn.Interval = 500;
+            this.timer_Spawn.Tick += new System.EventHandler(this.timer_Spawn_Tick);
             // 
             // Form1
             // 
@@ -39,11 +54,16 @@
             this.MinimumSize = new System.Drawing.Size(1024, 768);
             this.Name = "Form1";
             this.Text = "AshteRoids";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer timer_Game;
+        private System.Windows.Forms.Timer timer_Spawn;
     }
 }
 
