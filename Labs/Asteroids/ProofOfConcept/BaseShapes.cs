@@ -9,7 +9,7 @@ abstract class BaseShape
     protected float rotIncrement;   //Rotation speed
     protected float XSpeed;         //Horizontal speed
     protected float YSpeed;         //Vertical speed
-    protected int tilesize;         //Scale
+    protected int tilesize = 5;     //Scale
 
     //Static members
     static protected Random randNum; //Random number generator
@@ -96,7 +96,7 @@ abstract class BaseShape
     public BaseShape(PointF inPoint)
     {
         Position = inPoint;
-
+        
         rotation = 0;
         rotIncrement = (float)(randNum.NextDouble() * 6 - 3);
 
@@ -104,12 +104,10 @@ abstract class BaseShape
         YSpeed = (float)(randNum.NextDouble() * 5 - 2.5);
     }
 
-    public BaseShape(PointF inPoint, int inSize, float inRotation = 0, float inRotInc = 0, float inXSpeed = 0, float inYSpeed = 0)
+    public BaseShape(PointF inPoint, float inRotation = 0, float inRotInc = 0, float inXSpeed = 0, float inYSpeed = 0)
     {
         Position = inPoint;
-
-        tilesize = inSize;
-
+        
         rotation = inRotation;
         rotIncrement = inRotInc;
 
@@ -134,7 +132,7 @@ class Triangle : BaseShape
         //Make the transform
         Matrix mat = new Matrix();
         mat.Rotate(this.rotation);
-        mat.Scale(this.tilesize, this.tilesize, MatrixOrder.Append);
+        mat.Scale(tilesize, tilesize, MatrixOrder.Append);
         mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
         //Clone the model and apply the transform
         GraphicsPath temp = (model.Clone() as GraphicsPath);
@@ -143,7 +141,19 @@ class Triangle : BaseShape
         return temp;
     }
 
-    public Triangle(PointF inPoint) : base(inPoint, 5, 180, 0, 0, 0)
+    //Set the rotation of a triangle
+    public void setRotationIncrement(float inIncrement)
+    {
+        rotIncrement = inIncrement;
+    }
+    //Set the speed of a triangle
+    public void setSpeed(float inXSpeed, float inYSpeed)
+    {
+        XSpeed = inXSpeed;
+        YSpeed = inYSpeed;
+    }
+
+    public Triangle(PointF inPoint) : base(inPoint, 180, 0, 0, 0)
     {
         //Make a triangle but with some of the bottom cut out
         PointF[] outputTriangle = new PointF[4];
@@ -168,7 +178,7 @@ class Asteroid : BaseShape
         //Make the transform
         Matrix mat = new Matrix();
         mat.Rotate(this.rotation);
-        mat.Scale(this.tilesize, this.tilesize, MatrixOrder.Append);
+        mat.Scale(tilesize, tilesize, MatrixOrder.Append);
         mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
         //Clone the model and apply the transform
         GraphicsPath temp = (model.Clone() as GraphicsPath);

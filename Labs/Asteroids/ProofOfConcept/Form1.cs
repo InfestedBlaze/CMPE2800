@@ -23,12 +23,17 @@ namespace ProofOfConcept
         //Only need to check here for inputs
         InputControls keyControls = new InputControls();
         //Have our shapes
+        Triangle ship;
         List<BaseShape> shapeList = new List<BaseShape>();
+        //Random numbers
+        static Random randNum = new Random();
+        bool startPaused = false;
 
         public Form1()
         {
             InitializeComponent();
-            shapeList.Add(new Triangle(new PointF(ClientSize.Width/2, ClientSize.Height/2)));
+            ship = new Triangle(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
+            shapeList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height))));
         }
 
         //Main form does nothing with the key codes. Sends it to our input handler
@@ -49,22 +54,67 @@ namespace ProofOfConcept
                 {
                     //Clear our form of shapes
                     bg.Graphics.Clear(Color.Black);
+                    
+                    //Check our inputs for our triangle
+                    //if (keyControls.Inputs[Keys.W])
+                    //{
+                    //    //Fire thruster
+                    //}
+                    //if (keyControls.Inputs[Keys.S])
+                    //{
+                    //    //Fire reverse thruster
+                    //}
+                    //Rotation
+                    if (keyControls.Inputs[Keys.A])
+                    {
+                        //Rotate left
+                        ship.setRotationIncrement(-5);
+                    }
+                    else if (keyControls.Inputs[Keys.D])
+                    {
+                        //Rotate right
+                        ship.setRotationIncrement(5);
+                    }
+                    else
+                    {
+                        ship.setRotationIncrement(0);
+                    }
 
-                    //Tick through all of our shapes
-                    shapeList.ForEach(shape => shape.Tick(ClientSize));
+
+                    //Special inputs
+                    if (keyControls.Inputs[Keys.Space])
+                    {
+                        //Fire
+                    }
+
+                    if (keyControls.Inputs[Keys.P] == startPaused)
+                    {
+                        //Toggle the game's pause
+                        startPaused = !startPaused;
+                    }
+
+                    //Game is paused, stop all things
+                    if (startPaused)
+                    {
+                        //Tick through all of our shapes
+                        shapeList.ForEach(shape => shape.Tick(ClientSize));
+                        ship.Tick(ClientSize);
+                        //Remove all the shapes that are marked for death
+                        shapeList.RemoveAll(shape => shape.IsMarkedForDeath);
+                    }
+
 
                     //Put our shapes on the screen
-                    shapeList.ForEach(shape =>
-                    {
-                        //Triangles are yellow, asteroids are red
-                        if (shape is Triangle)
-                            shape.Render(Color.Yellow, bg.Graphics);
-                        else
-                            shape.Render(Color.Red, bg.Graphics);
-                    });
+                    ship.Render(Color.Yellow, bg.Graphics);
+                    shapeList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
 
-                    //Remove all the shapes that are marked for death
-                    shapeList.RemoveAll(shape => shape.IsMarkedForDeath);
+                    //Game is paused
+                    if (!startPaused)
+                    {
+                        //Draw a black fade over the screen
+                        bg.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(200, Color.Black)), ClientRectangle);
+                        bg.Graphics.DrawString("Paused", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
+                    }
 
                     //Render our shapes
                     bg.Render();
