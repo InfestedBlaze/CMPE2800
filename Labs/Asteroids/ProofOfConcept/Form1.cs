@@ -27,7 +27,10 @@ namespace ProofOfConcept
         List<BaseShape> shapeList = new List<BaseShape>();
         //Random numbers
         static Random randNum = new Random();
-        bool startPaused = false;
+
+        //Variables to check if we are paused
+        bool Paused = false;        //Pauses the game when true
+        bool startPaused = false;   //Determines the previous state of the pause button
 
         public Form1()
         {
@@ -55,15 +58,8 @@ namespace ProofOfConcept
                     //Clear our form of shapes
                     bg.Graphics.Clear(Color.Black);
                     
-                    //Check our inputs for our triangle
-                    //if (keyControls.Inputs[Keys.W])
-                    //{
-                    //    //Fire thruster
-                    //}
-                    //if (keyControls.Inputs[Keys.S])
-                    //{
-                    //    //Fire reverse thruster
-                    //}
+                    //Check the inputs for our triangle
+                    
                     //Rotation
                     if (keyControls.Inputs[Keys.A])
                     {
@@ -85,16 +81,23 @@ namespace ProofOfConcept
                     if (keyControls.Inputs[Keys.Space])
                     {
                         //Fire
+                        shapeList.Add(new Asteroid(ship.GetPath().PathPoints[0]));
                     }
-
-                    if (keyControls.Inputs[Keys.P] == startPaused)
+                    //Check for a new button state
+                    if (keyControls.Inputs[Keys.P] != startPaused)
                     {
-                        //Toggle the game's pause
-                        startPaused = !startPaused;
+                        //Got a new button state
+                        startPaused = keyControls.Inputs[Keys.P];
+                        //Check if new button state is pressed down
+                        if (startPaused)
+                        {
+                            //Toggle the game's pause
+                            Paused = !Paused;
+                        }
                     }
 
-                    //Game is paused, stop all things
-                    if (startPaused)
+                    //Game is not paused, do all things
+                    if (!Paused)
                     {
                         //Tick through all of our shapes
                         shapeList.ForEach(shape => shape.Tick(ClientSize));
@@ -107,9 +110,8 @@ namespace ProofOfConcept
                     //Put our shapes on the screen
                     ship.Render(Color.Yellow, bg.Graphics);
                     shapeList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
-
-                    //Game is paused
-                    if (!startPaused)
+                    //Game is paused, draw pause over top screen
+                    if (Paused)
                     {
                         //Draw a black fade over the screen
                         bg.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(200, Color.Black)), ClientRectangle);

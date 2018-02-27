@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Author: Nic Wasylyshyn
+ * Date: February 26, 2018
+ * Description: This hierarchy is used to create shapes
+ * for our game. They have sizes and movements unique to
+ * themselves. They have a way to render themselves onto 
+ * a form.
+ */
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
@@ -67,24 +75,20 @@ abstract class BaseShape
         //We would go outside the horizontal window
         if (Position.X + XSpeed < 0)
         {
-            XSpeed *= -1;
-            Position = new PointF(0, Position.Y);
+            Position = new PointF(canvSize.Width, Position.Y);
         }
         else if (Position.X + XSpeed > canvSize.Width)
         {
-            XSpeed *= -1;
-            Position = new PointF(canvSize.Width, Position.Y);
+            Position = new PointF(0, Position.Y);
         }
         //We would go outside the vertical window
         if (Position.Y + YSpeed < 0)
         {
-            YSpeed *= -1;
-            Position = new PointF(Position.X, 0);
+            Position = new PointF(Position.X, canvSize.Height);
         }
         else if (Position.Y + YSpeed > canvSize.Height)
         {
-            YSpeed *= -1;
-            Position = new PointF(Position.X, canvSize.Height);
+            Position = new PointF(Position.X, 0);
         }
         //Translate our object
         float x = Position.X + XSpeed;
