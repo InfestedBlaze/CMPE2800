@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ReleaseVersion
 {
@@ -20,6 +21,9 @@ namespace ReleaseVersion
         List<Bullet> bulletList = new List<Bullet>();
         //Random numbers
         static Random randNum = new Random();
+        //timing things
+        Stopwatch timer = new Stopwatch();
+        long lastShot = 0;
 
         //Variables to check if we are paused
         bool Paused = false;        //Pauses the game when true
@@ -30,6 +34,7 @@ namespace ReleaseVersion
             InitializeComponent();
             //Triangle is only used for our ship, it has been slightly modded to allow for this
             ship = new Triangle(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
+            timer.Restart();
         }
 
         //Main form does nothing with the key codes. Sends it to our input handler
@@ -76,9 +81,11 @@ namespace ReleaseVersion
                     if (keyControls.Inputs[Keys.Space])
                     {
                         //Fire
-                        if (!Paused && bulletList.Count < 8)
+                        //Less than 8 bullets, 300ms delay between bullets
+                        if (!Paused && bulletList.Count < 8 && lastShot < timer.ElapsedMilliseconds-300)
                         {
                             bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
+                            lastShot = timer.ElapsedMilliseconds;
                         }
 
                     }
@@ -134,7 +141,7 @@ namespace ReleaseVersion
 
         private void timer_Spawn_Tick(object sender, EventArgs e)
         {
-            timer_Spawn.Interval--;
+            if (timer_Spawn.Interval > 0) timer_Spawn.Interval--;
             asteroidList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height))));
         }
     }

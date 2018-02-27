@@ -234,9 +234,9 @@ class Bullet : BaseShape
     public Bullet(PointF inPoint, float direction) : base(inPoint, 2, 0, 0, 0, 0)
     {
         model = GenerateShape(360, tilesize, 0);
-
-        this.XSpeed = (float)(Math.Cos(direction * Math.PI/180) * 5);
-        this.YSpeed = (float)(Math.Sin(direction * Math.PI/180) * 5);
+        
+        this.XSpeed = (float)(Math.Cos(direction * Math.PI/180 + Math.PI / 2) * 5);
+        this.YSpeed = (float)(Math.Sin(direction * Math.PI/180 + Math.PI / 2) * 5);
     }
 
     public override void Tick(Size canvSize)
