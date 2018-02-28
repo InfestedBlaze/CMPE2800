@@ -16,14 +16,15 @@ namespace ReleaseVersion
         //Only need to check here for inputs
         InputControls keyControls = new InputControls();
         //Have our shapes
-        Triangle ship;
-        List<BaseShape> asteroidList = new List<BaseShape>();
+        Ship ship;
+        List<Asteroid> asteroidList = new List<Asteroid>();
         List<Bullet> bulletList = new List<Bullet>();
+
         //Random numbers
         static Random randNum = new Random();
         //timing things
         Stopwatch timer = new Stopwatch();
-        long lastShot = 0;
+        long lastShotTime = 0;
 
         //Variables to check if we are paused
         bool Paused = false;        //Pauses the game when true
@@ -33,8 +34,12 @@ namespace ReleaseVersion
         {
             InitializeComponent();
             //Triangle is only used for our ship, it has been slightly modded to allow for this
-            ship = new Triangle(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
-            timer.Restart();
+            ship = new Ship(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            openingScreen();
         }
 
         //Main form does nothing with the key codes. Sends it to our input handler
@@ -47,6 +52,33 @@ namespace ReleaseVersion
             keyControls.KeyUp(e.KeyCode);
         }
 
+        //Opening screen
+        private void openingScreen()
+        {
+            while (!keyControls.Inputs[Keys.Space])
+            {
+                using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+                {
+                    using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
+                    {
+                        bg.Graphics.Clear(Color.Black);
+
+                        //Give instructions
+                        int startX = ClientSize.Width / 4;
+                        bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
+                        bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+                        bg.Graphics.DrawString("Space to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
+                        bg.Graphics.DrawString("Space to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
+
+                        bg.Render();
+                    }
+                }
+            }
+            //Enable the timers and stopwatch
+            timer_Game.Enabled = true;
+            timer_Spawn.Enabled = true;
+            timer.Restart();
+        }
 
         //Everything our game does is in here
         private void timer_Game_Tick(object sender, EventArgs e)
@@ -75,17 +107,16 @@ namespace ReleaseVersion
                     {
                         ship.setRotationIncrement(0);
                     }
-
-
+                    
                     //Special inputs
                     if (keyControls.Inputs[Keys.Space])
                     {
                         //Fire
                         //Less than 8 bullets, 300ms delay between bullets
-                        if (!Paused && bulletList.Count < 8 && lastShot < timer.ElapsedMilliseconds-300)
+                        if (!Paused && bulletList.Count < 8 && lastShotTime < timer.ElapsedMilliseconds-300)
                         {
                             bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
-                            lastShot = timer.ElapsedMilliseconds;
+                            lastShotTime = timer.ElapsedMilliseconds;
                         }
 
                     }
@@ -113,6 +144,22 @@ namespace ReleaseVersion
                         ship.Tick(ClientSize);
 
                         //Do collision calculations
+                        foreach (BaseShape asteroid in asteroidList)
+                        {
+                            //If we are within the size of the ship, check collision
+                            if(GetDistance(asteroid, ship) < ship.Size)
+                            {
+
+                            }
+                            //If we are within the size of any bullet, check collision
+                            foreach (BaseShape bullet in bulletList)
+                            {
+                                if (GetDistance(asteroid, bullet) < bullet.Size)
+                                {
+
+                                }
+                            }
+                        }
 
                         //Remove all the shapes that are marked for death
                         asteroidList.RemoveAll(shape => shape.IsMarkedForDeath);
@@ -144,5 +191,13 @@ namespace ReleaseVersion
             if (timer_Spawn.Interval > 0) timer_Spawn.Interval--;
             asteroidList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height))));
         }
+
+        private float GetDistance(BaseShape arg1, BaseShape arg2)
+        {
+            // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
+            return (float)Math.Sqrt(Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
+        }
+
+        
     }
 }

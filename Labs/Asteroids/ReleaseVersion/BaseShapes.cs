@@ -19,6 +19,8 @@ abstract class BaseShape
     protected float YSpeed;         //Vertical speed
     protected int tilesize = 5;     //Scale
 
+    public int Size { get { return tilesize; } }
+
     //Static members
     static protected Random randNum; //Random number generator
 
@@ -129,10 +131,10 @@ abstract class BaseShape
     }
 }
 
-class Triangle : BaseShape
+class Ship : BaseShape
 {
     //Our unchangeable model
-    readonly GraphicsPath model;
+    static readonly GraphicsPath model;
 
     //How to get a copy our unchangeable model with appropriate transforms
     public override GraphicsPath GetPath()
@@ -149,7 +151,11 @@ class Triangle : BaseShape
         return temp;
     }
     
-    public Triangle(PointF inPoint) : base(inPoint, 5, 180, 0, 0, 0)
+    public Ship(PointF inPoint) : base(inPoint, 5, 180, 0, 0, 0)
+    {
+    }
+
+    static Ship()
     {
         //Make a triangle but with some of the bottom cut out
         PointF[] outputTriangle = new PointF[4];
@@ -214,7 +220,7 @@ class Asteroid : BaseShape
 class Bullet : BaseShape
 {
     //Our unchangeable model
-    readonly GraphicsPath model;
+    static readonly GraphicsPath model;
 
     //How to get a copy our unchangeable model with appropriate transforms
     public override GraphicsPath GetPath()
@@ -233,10 +239,13 @@ class Bullet : BaseShape
 
     public Bullet(PointF inPoint, float direction) : base(inPoint, 2, 0, 0, 0, 0)
     {
-        model = GenerateShape(360, tilesize, 0);
-        
         this.XSpeed = (float)(Math.Cos(direction * Math.PI/180 + Math.PI / 2) * 5);
         this.YSpeed = (float)(Math.Sin(direction * Math.PI/180 + Math.PI / 2) * 5);
+    }
+
+    static Bullet()
+    {
+        model = GenerateShape(360, 2, 0);
     }
 
     public override void Tick(Size canvSize)
