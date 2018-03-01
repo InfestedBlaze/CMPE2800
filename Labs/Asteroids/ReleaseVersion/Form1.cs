@@ -55,7 +55,8 @@ namespace ReleaseVersion
         //Opening screen
         private void openingScreen()
         {
-            while (!keyControls.Inputs[Keys.Space])
+            bool stop = true;
+            while (stop)
             {
                 using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
                 {
@@ -73,6 +74,8 @@ namespace ReleaseVersion
                         bg.Render();
                     }
                 }
+
+                stop = !keyControls.Inputs[Keys.Space];
             }
             //Enable the timers and stopwatch
             timer_Game.Enabled = true;
@@ -156,7 +159,6 @@ namespace ReleaseVersion
                             {
                                 if (GetDistance(asteroid, bullet) < bullet.Size)
                                 {
-
                                 }
                             }
                         }
