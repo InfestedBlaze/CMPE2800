@@ -17,7 +17,7 @@ abstract class BaseShape
     protected float rotIncrement;   //Rotation speed
     protected float XSpeed;         //Horizontal speed
     protected float YSpeed;         //Vertical speed
-    protected int tilesize = 5;     //Scale
+    protected int tilesize;         //Scale
 
     public int Size { get { return tilesize; } }
 
@@ -73,25 +73,7 @@ abstract class BaseShape
     {
         //Rotate our object
         rotation += rotIncrement;
-
-        //We would go outside the horizontal window, wrap to other edge
-        if (Position.X + XSpeed < 0)
-        {
-            Position = new PointF(canvSize.Width, Position.Y);
-        }
-        else if (Position.X + XSpeed > canvSize.Width)
-        {
-            Position = new PointF(0, Position.Y);
-        }
-        //We would go outside the vertical window, wrap to other edge
-        if (Position.Y + YSpeed < 0)
-        {
-            Position = new PointF(Position.X, canvSize.Height);
-        }
-        else if (Position.Y + YSpeed > canvSize.Height)
-        {
-            Position = new PointF(Position.X, 0);
-        }
+        
         //Translate our object
         float x = Position.X + XSpeed;
         float y = Position.Y + YSpeed;
@@ -193,9 +175,7 @@ class Asteroid : BaseShape
 {
     //Our unchangeable model
     readonly GraphicsPath model;
-
-    public const int MAXSIZE = 10;
-
+    
     //How to get a copy our unchangeable model with appropriate transforms
     public override GraphicsPath GetPath()
     {
@@ -217,6 +197,33 @@ class Asteroid : BaseShape
     }
 
     //vvvvvvvv Mods for the asteroid game vvvvvvvvvvvvvvvvvv
+
+    public override void Tick(Size canvSize)
+    {
+        //We would go outside the horizontal window, wrap to other edge
+        if (Position.X + XSpeed < 0)
+        {
+            Position = new PointF(canvSize.Width, Position.Y);
+        }
+        else if (Position.X + XSpeed > canvSize.Width)
+        {
+            Position = new PointF(0, Position.Y);
+        }
+        //We would go outside the vertical window, wrap to other edge
+        if (Position.Y + YSpeed < 0)
+        {
+            Position = new PointF(Position.X, canvSize.Height);
+        }
+        else if (Position.Y + YSpeed > canvSize.Height)
+        {
+            Position = new PointF(Position.X, 0);
+        }
+
+        base.Tick(canvSize);
+    }
+
+    //Maximum size of the asteroid
+    public const int MAXSIZE = 10;
 }
 
 class Bullet : BaseShape

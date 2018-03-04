@@ -23,8 +23,10 @@ namespace ReleaseVersion
 
         //Lives
         int shipLives = 3;
+        
         //Score
         int score = 0;
+        int newLife = 10000; //This is how much score you need to get a new life
 
         //Random numbers
         static Random randNum = new Random();
@@ -79,7 +81,7 @@ namespace ReleaseVersion
             }
             
             //Pause for input
-            //while (!keyControls.Inputs[Keys.Space]) { }
+            //while (!keyControls.Inputs[Keys.Space]) { } //TODO
 
             //Enable the timers and stopwatch
             timer_Game.Enabled = true;
@@ -110,11 +112,12 @@ namespace ReleaseVersion
             }
 
             //Pause for input
-            //while (!keyControls.Inputs[Keys.Space]) { }
+            //while (!keyControls.Inputs[Keys.Space]) { } //TODO
 
             //Reset everything before going on
             shipLives = 3;
             score = 0;
+            newLife = 10000;
             asteroidList.Clear();
             bulletList.Clear();
             lastShotTime = 0;
@@ -205,9 +208,6 @@ namespace ReleaseVersion
                                     //Lose a life
                                     if(shipLives > 0)
                                         shipLives--;
-                                    else
-                                        //Call game over
-                                        GameOverScreen();
 
                                     //Kill the asteroid
                                     asteroid.IsMarkedForDeath = true;
@@ -226,21 +226,52 @@ namespace ReleaseVersion
                                     //Check if there is any collision
                                     if (bulletRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
                                     {
-                                        if (asteroid.Size >= Asteroid.MAXSIZE / 2)
+                                        //Check if any asteroids can be broken up.
+                                        //Add score based on size. Large worth less than small
+                                        if (asteroid.Size == Asteroid.MAXSIZE)
                                         {
-                                            //Asteroid can break apart into 3 new, smaller asteroids
+                                            //Large asteroid can break apart into 2 new, smaller asteroids
                                             asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
                                             asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+
+                                            //Score based on asteroid size
+                                            score += 100;
                                         }
+                                        else if (asteroid.Size >= Asteroid.MAXSIZE / 2)
+                                        {
+                                            //Medium asteroid can break apart into 3 new, smaller asteroids
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
 
-                                        score += 10 * asteroid.Size;
-
+                                            //Score based on asteroid size
+                                            score += 200;
+                                        }
+                                        else
+                                        {
+                                            //Score based on asteroid size
+                                            score += 300;
+                                        }
+                                        
+                                        //Kill bullet and asteroid
                                         asteroid.IsMarkedForDeath = true;
                                         bullet.IsMarkedForDeath = true;
                                     }
                                 }
                             }
+                        }
+                        
+                        //Check if we have more than/equal to newLife points
+                        if (score - newLife >= 0)
+                        {
+                            shipLives++;
+                            newLife += 10000; //This is assuming 10,000 is your starting value
+                        }
+                        //Check if we are out of lives
+                        if (shipLives <= 0)
+                        {
+                            //Call game over
+                            GameOverScreen();
                         }
 
                         //Remove all the shapes that are marked for death
@@ -253,7 +284,7 @@ namespace ReleaseVersion
                     ship.Render(Color.Yellow, bg.Graphics);
                     asteroidList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
                     bulletList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
-                    bg.Graphics.DrawString($"Score: {score}\nLives: {shipLives}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
+                    bg.Graphics.DrawString($"Score: {score}\nLives: {shipLives}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientRectangle);
 
                     //Game is paused, draw pause over top screen
                     if (Paused)
