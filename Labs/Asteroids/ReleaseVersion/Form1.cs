@@ -15,13 +15,20 @@ namespace ReleaseVersion
     {
         //Only need to check here for inputs
         InputControls keyControls = new InputControls();
+
         //Have our shapes
         Ship ship;
         List<Asteroid> asteroidList = new List<Asteroid>();
         List<Bullet> bulletList = new List<Bullet>();
 
+        //Lives
+        int shipLives = 3;
+        //Score
+        int score = 0;
+
         //Random numbers
         static Random randNum = new Random();
+
         //timing things
         Stopwatch timer = new Stopwatch();
         long lastShotTime = 0;
@@ -33,7 +40,6 @@ namespace ReleaseVersion
         public Form1()
         {
             InitializeComponent();
-            //Triangle is only used for our ship, it has been slightly modded to allow for this
             ship = new Ship(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
         }
 
@@ -55,32 +61,67 @@ namespace ReleaseVersion
         //Opening screen
         private void openingScreen()
         {
-            bool stop = true;
-            while (stop)
+            using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
             {
-                using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+                using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
                 {
-                    using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
-                    {
-                        bg.Graphics.Clear(Color.Black);
+                    bg.Graphics.Clear(Color.Black);
 
-                        //Give instructions
-                        int startX = ClientSize.Width / 4;
-                        bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
-                        bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
-                        bg.Graphics.DrawString("Space to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
-                        bg.Graphics.DrawString("Space to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
+                    //Give instructions
+                    int startX = ClientSize.Width / 4;
+                    bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
+                    bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+                    bg.Graphics.DrawString("Space to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
+                    bg.Graphics.DrawString("Space to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
 
-                        bg.Render();
-                    }
+                    bg.Render();
                 }
-
-                stop = !keyControls.Inputs[Keys.Space];
             }
+            
+            //Pause for input
+            //while (!keyControls.Inputs[Keys.Space]) { }
+
             //Enable the timers and stopwatch
             timer_Game.Enabled = true;
             timer_Spawn.Enabled = true;
             timer.Restart();
+        }
+
+        private void GameOverScreen()
+        {
+            //Disable the game
+            timer_Game.Enabled = false;
+            timer_Spawn.Enabled = false;
+
+            //Write on the screen
+            using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+            {
+                using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
+                {
+                    bg.Graphics.Clear(Color.Black);
+
+                    //Give instructions
+                    int startX = ClientSize.Width / 4;
+                    bg.Graphics.DrawString("Game Over", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
+                    bg.Graphics.DrawString($"Score: {score}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+
+                    bg.Render();
+                }
+            }
+
+            //Pause for input
+            //while (!keyControls.Inputs[Keys.Space]) { }
+
+            //Reset everything before going on
+            shipLives = 3;
+            score = 0;
+            asteroidList.Clear();
+            bulletList.Clear();
+            lastShotTime = 0;
+            timer_Spawn.Interval = 2000;
+
+            //Go back to start screen
+            openingScreen();
         }
 
         //Everything our game does is in here
@@ -94,7 +135,6 @@ namespace ReleaseVersion
                     bg.Graphics.Clear(Color.Black);
 
                     //Check the inputs for our triangle
-
                     //Rotation
                     if (keyControls.Inputs[Keys.A])
                     {
@@ -147,18 +187,58 @@ namespace ReleaseVersion
                         ship.Tick(ClientSize);
 
                         //Do collision calculations
-                        foreach (BaseShape asteroid in asteroidList)
+                        foreach (BaseShape asteroid in asteroidList.ToList())
                         {
-                            //If we are within the size of the ship, check collision
-                            if(GetDistance(asteroid, ship) < ship.Size)
-                            {
+                            //Get the asteroids region
+                            Region asteroidRegion = new Region(asteroid.GetPath());
 
+                            //If we are within hit range for ship, check collision
+                            if (GetDistance(asteroid, ship) < Math.Pow(ship.Size,2) + Math.Pow(asteroid.Size,2))
+                            {
+                                //Get the ships region
+                                Region shipRegion = new Region(ship.GetPath());
+                                //Intersect the regions
+                                shipRegion.Intersect(asteroidRegion);
+                                //Check if there is any collision
+                                if(shipRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
+                                {
+                                    //Lose a life
+                                    if(shipLives > 0)
+                                        shipLives--;
+                                    else
+                                        //Call game over
+                                        GameOverScreen();
+
+                                    //Kill the asteroid
+                                    asteroid.IsMarkedForDeath = true;
+                                }
                             }
-                            //If we are within the size of any bullet, check collision
+
+                            //If we are within hit range for bullet, check collision
                             foreach (BaseShape bullet in bulletList)
                             {
-                                if (GetDistance(asteroid, bullet) < bullet.Size)
+                                if (GetDistance(asteroid, bullet) < Math.Pow(bullet.Size,2) + Math.Pow(asteroid.Size,5))
                                 {
+                                    //Get the bullets region
+                                    Region bulletRegion = new Region(bullet.GetPath());
+                                    //Intersect the regions
+                                    bulletRegion.Intersect(asteroidRegion);
+                                    //Check if there is any collision
+                                    if (bulletRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
+                                    {
+                                        if (asteroid.Size >= Asteroid.MAXSIZE / 2)
+                                        {
+                                            //Asteroid can break apart into 3 new, smaller asteroids
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                        }
+
+                                        score += 10 * asteroid.Size;
+
+                                        asteroid.IsMarkedForDeath = true;
+                                        bullet.IsMarkedForDeath = true;
+                                    }
                                 }
                             }
                         }
@@ -173,6 +253,7 @@ namespace ReleaseVersion
                     ship.Render(Color.Yellow, bg.Graphics);
                     asteroidList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
                     bulletList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
+                    bg.Graphics.DrawString($"Score: {score}\nLives: {shipLives}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
 
                     //Game is paused, draw pause over top screen
                     if (Paused)
@@ -190,16 +271,14 @@ namespace ReleaseVersion
 
         private void timer_Spawn_Tick(object sender, EventArgs e)
         {
-            if (timer_Spawn.Interval > 0) timer_Spawn.Interval--;
-            asteroidList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height))));
+            if (timer_Spawn.Interval > 1000) timer_Spawn.Interval--;
+            asteroidList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height)), Asteroid.MAXSIZE));
         }
 
         private float GetDistance(BaseShape arg1, BaseShape arg2)
         {
             // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
-            return (float)Math.Sqrt(Math.Pow(arg1.Position.X - arg2.Position.X, 2) + Math.Pow(arg1.Position.Y - arg2.Position.Y, 2));
+            return (float)Math.Sqrt(Math.Pow(arg2.Position.X - arg1.Position.X, 2) + Math.Pow(arg2.Position.Y - arg1.Position.Y, 2));
         }
-
-        
     }
 }

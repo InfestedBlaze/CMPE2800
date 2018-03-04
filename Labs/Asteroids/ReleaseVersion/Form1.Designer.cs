@@ -40,14 +40,14 @@
             // 
             // timer_Spawn
             // 
-            this.timer_Spawn.Interval = 500;
+            this.timer_Spawn.Interval = 2000;
             this.timer_Spawn.Tick += new System.EventHandler(this.timer_Spawn_Tick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 729);
+            this.ClientSize = new System.Drawing.Size(1008, 730);
             this.MaximumSize = new System.Drawing.Size(1024, 768);
             this.MinimumSize = new System.Drawing.Size(1024, 768);
             this.Name = "Form1";

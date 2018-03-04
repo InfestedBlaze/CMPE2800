@@ -194,6 +194,8 @@ class Asteroid : BaseShape
     //Our unchangeable model
     readonly GraphicsPath model;
 
+    public const int MAXSIZE = 10;
+
     //How to get a copy our unchangeable model with appropriate transforms
     public override GraphicsPath GetPath()
     {
@@ -209,7 +211,7 @@ class Asteroid : BaseShape
         return temp;
     }
     //Constructor
-    public Asteroid(PointF inPoint) : base(inPoint, 5)
+    public Asteroid(PointF inPoint, int inSize) : base(inPoint, inSize)
     {
         this.model = GenerateShape(randNum.Next(5, 12), tilesize, 0.7f);
     }
