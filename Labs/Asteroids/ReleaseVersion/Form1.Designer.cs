@@ -54,7 +54,6 @@
             this.MinimumSize = new System.Drawing.Size(1024, 768);
             this.Name = "Form1";
             this.Text = "AshteRoids";
-            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.ResumeLayout(false);

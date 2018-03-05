@@ -84,8 +84,8 @@ public class InputControls
                 lock (keys)
                 {
                     //Left thumbstick is mapped to WASD
-                    keys[System.Windows.Forms.Keys.W] = gps.ThumbSticks.Left.Y > 0;
-                    keys[System.Windows.Forms.Keys.S] = gps.ThumbSticks.Left.Y < 0;
+                    keys[System.Windows.Forms.Keys.W] = gps.IsButtonDown(Buttons.B);
+                    keys[System.Windows.Forms.Keys.S] = gps.IsButtonDown(Buttons.X);
                     keys[System.Windows.Forms.Keys.A] = gps.ThumbSticks.Left.X < 0;
                     keys[System.Windows.Forms.Keys.D] = gps.ThumbSticks.Left.X > 0;
 
