@@ -87,8 +87,8 @@ abstract class BaseShape
 
         tilesize = size;
 
-        rotation = (float)(randNum.NextDouble() * 360);
-        rotIncrement = (float)(randNum.NextDouble() * 6 - 3);
+        rotation = (float)(randNum.NextDouble() * Math.PI * 2);
+        rotIncrement = degreesToRadians((float)(randNum.NextDouble() * 6 - 3));
 
         XSpeed = (float)(randNum.NextDouble() * 5 - 2.5);
         YSpeed = (float)(randNum.NextDouble() * 5 - 2.5);
@@ -111,6 +111,15 @@ abstract class BaseShape
     {
         randNum = new Random();
     }
+    
+    static public float degreesToRadians(float degrees)
+    {
+        return degrees * (float)((Math.PI * 2) / 360);
+    }
+    static public float radianToDegrees(float radians)
+    {
+        return radians * (float)(360 / (Math.PI * 2));
+    }
 }
 
 class Ship : BaseShape
@@ -123,7 +132,7 @@ class Ship : BaseShape
     {
         //Make the transform
         Matrix mat = new Matrix();
-        mat.Rotate(this.rotation);
+        mat.Rotate(radianToDegrees(this.rotation));
         mat.Scale(tilesize, tilesize, MatrixOrder.Append);
         mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
         //Clone the model and apply the transform
@@ -133,7 +142,7 @@ class Ship : BaseShape
         return temp;
     }
     
-    public Ship(PointF inPoint) : base(inPoint, 5, 180, 0, 0, 0)
+    public Ship(PointF inPoint) : base(inPoint, 5, (float)Math.PI, 0, 0, 0)
     {
     }
 
@@ -151,7 +160,7 @@ class Ship : BaseShape
     }
 
     //vvvvvvvv Mods for the asteroid game vvvvvvvvvvvvvvvvvv
-
+    
     //Get the current rotation of the triangle
     public float getRotation()
     {
@@ -181,7 +190,7 @@ class Asteroid : BaseShape
     {
         //Make the transform
         Matrix mat = new Matrix();
-        mat.Rotate(this.rotation);
+        mat.Rotate(radianToDegrees(this.rotation));
         mat.Scale(tilesize, tilesize, MatrixOrder.Append);
         mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
         //Clone the model and apply the transform
@@ -236,7 +245,7 @@ class Bullet : BaseShape
     {
         //Make the transform
         Matrix mat = new Matrix();
-        mat.Rotate(this.rotation);
+        mat.Rotate(radianToDegrees(this.rotation));
         mat.Scale(tilesize, tilesize, MatrixOrder.Append);
         mat.Translate(this.Position.X, this.Position.Y, MatrixOrder.Append);
         //Clone the model and apply the transform
@@ -248,8 +257,8 @@ class Bullet : BaseShape
 
     public Bullet(PointF inPoint, float direction) : base(inPoint, 2, 0, 0, 0, 0)
     {
-        this.XSpeed = (float)(Math.Cos(direction * Math.PI/180 + Math.PI / 2) * 5);
-        this.YSpeed = (float)(Math.Sin(direction * Math.PI/180 + Math.PI / 2) * 5);
+        this.XSpeed = (float)(Math.Cos(direction + Math.PI/2) * 5);
+        this.YSpeed = (float)(Math.Sin(direction + Math.PI / 2) * 5);
     }
 
     static Bullet()
@@ -264,10 +273,7 @@ class Bullet : BaseShape
         {
             IsMarkedForDeath = true;
         }
-
-        //Translate our object
-        float x = Position.X + XSpeed;
-        float y = Position.Y + YSpeed;
-        Position = new PointF(x, y);
+        
+        base.Tick(canvSize);
     }
 }

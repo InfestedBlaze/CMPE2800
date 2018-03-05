@@ -11,6 +11,8 @@ using System.Diagnostics;
 
 namespace ReleaseVersion
 {
+    enum gameState { Start, Playing, GameOver}
+
     public partial class Form1 : Form
     {
         //Only need to check here for inputs
@@ -39,6 +41,8 @@ namespace ReleaseVersion
         bool Paused = false;        //Pauses the game when true
         bool startPaused = false;   //Determines the previous state of the pause button
 
+        gameState gameState = gameState.Start;
+
         public Form1()
         {
             InitializeComponent();
@@ -63,239 +67,269 @@ namespace ReleaseVersion
         //Opening screen
         private void openingScreen()
         {
-            using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
-            {
-                using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
-                {
-                    bg.Graphics.Clear(Color.Black);
-
-                    //Give instructions
-                    int startX = ClientSize.Width / 4;
-                    bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
-                    bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
-                    bg.Graphics.DrawString("Space to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
-                    bg.Graphics.DrawString("Space to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
-
-                    bg.Render();
-                }
-            }
             
-            //Pause for input
-            //while (!keyControls.Inputs[Keys.Space]) { } //TODO
-
-            //Enable the timers and stopwatch
-            timer_Game.Enabled = true;
-            timer_Spawn.Enabled = true;
-            timer.Restart();
-        }
-
-        private void GameOverScreen()
-        {
-            //Disable the game
-            timer_Game.Enabled = false;
-            timer_Spawn.Enabled = false;
-
-            //Write on the screen
-            using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
-            {
-                using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
-                {
-                    bg.Graphics.Clear(Color.Black);
-
-                    //Give instructions
-                    int startX = ClientSize.Width / 4;
-                    bg.Graphics.DrawString("Game Over", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
-                    bg.Graphics.DrawString($"Score: {score}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
-
-                    bg.Render();
-                }
-            }
-
-            //Pause for input
-            //while (!keyControls.Inputs[Keys.Space]) { } //TODO
-
-            //Reset everything before going on
-            shipLives = 3;
-            score = 0;
-            newLife = 10000;
-            asteroidList.Clear();
-            bulletList.Clear();
-            lastShotTime = 0;
-            timer_Spawn.Interval = 2000;
-
-            //Go back to start screen
-            openingScreen();
         }
 
         //Everything our game does is in here
         private void timer_Game_Tick(object sender, EventArgs e)
         {
-            using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+            if (gameState == gameState.Start)
             {
-                using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
+                using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
                 {
-                    //Clear our form of shapes
-                    bg.Graphics.Clear(Color.Black);
+                    using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
+                    {
+                        bg.Graphics.Clear(Color.Black);
 
-                    //Check the inputs for our triangle
-                    //Rotation
-                    if (keyControls.Inputs[Keys.A])
-                    {
-                        //Rotate left
-                        ship.setRotationIncrement(-5);
+                        //Give instructions
+                        int startX = ClientSize.Width / 4;
+                        bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
+                        bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+                        bg.Graphics.DrawString("Space to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
+                        bg.Graphics.DrawString("Space to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
+
+                        bg.Render();
                     }
-                    else if (keyControls.Inputs[Keys.D])
+                }
+
+                //Reset everything before going on
+                shipLives = 3;
+                score = 0;
+                newLife = 10000;
+                asteroidList.Clear();
+                bulletList.Clear();
+                timer.Restart();
+                lastShotTime = 0;
+                timer_Spawn.Interval = 2000;
+
+                if (keyControls.Inputs[Keys.Space])
+                {
+                    gameState = gameState.Playing;
+                }
+            }
+            else if (gameState == gameState.Playing)
+            {
+                using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+                {
+                    using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
                     {
-                        //Rotate right
-                        ship.setRotationIncrement(5);
-                    }
-                    else
-                    {
-                        ship.setRotationIncrement(0);
-                    }
-                    
-                    //Special inputs
-                    if (keyControls.Inputs[Keys.Space])
-                    {
-                        //Fire
-                        //Less than 8 bullets, 300ms delay between bullets
-                        if (!Paused && bulletList.Count < 8 && lastShotTime < timer.ElapsedMilliseconds-300)
+                        //Clear our form of shapes
+                        bg.Graphics.Clear(Color.Black);
+
+                        //Check the inputs for our triangle
+                        //Rotation
+                        if (keyControls.Inputs[Keys.A])
                         {
-                            bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
-                            lastShotTime = timer.ElapsedMilliseconds;
+                            //Rotate left
+                            ship.setRotationIncrement(BaseShape.degreesToRadians(-5));
+                        }
+                        else if (keyControls.Inputs[Keys.D])
+                        {
+                            //Rotate right
+                            ship.setRotationIncrement(BaseShape.degreesToRadians(5));
+                        }
+                        else
+                        {
+                            ship.setRotationIncrement(0);
                         }
 
-                    }
-                    //Check for a new button state, for pausing
-                    if (keyControls.Inputs[Keys.P] != startPaused)
-                    {
-                        //Got a new button state
-                        startPaused = keyControls.Inputs[Keys.P];
-                        //Check if new button state is pressed down
-                        if (startPaused)
+                        //Special inputs
+                        //Drive forward
+                        //if (keyControls.Inputs[Keys.W])
+                        //{
+                        //    if (!Paused)
+                        //    {
+                        //    }
+                        //}
+
+                        //Fire single shot
+                        if (keyControls.Inputs[Keys.Space])
                         {
-                            //Toggle the game's pause
-                            Paused = !Paused;
-                            //Stop the spawn timer if we are paused
-                            timer_Spawn.Enabled = !Paused;
-                        }
-                    }
-
-                    //Game is not paused, do all things
-                    if (!Paused)
-                    {
-                        //Tick through all of our shapes
-                        asteroidList.ForEach(shape => shape.Tick(ClientSize));
-                        bulletList.ForEach(shape => shape.Tick(ClientSize));
-                        ship.Tick(ClientSize);
-
-                        //Do collision calculations
-                        foreach (BaseShape asteroid in asteroidList.ToList())
-                        {
-                            //Get the asteroids region
-                            Region asteroidRegion = new Region(asteroid.GetPath());
-
-                            //If we are within hit range for ship, check collision
-                            if (GetDistance(asteroid, ship) < Math.Pow(ship.Size,2) + Math.Pow(asteroid.Size,2))
+                            //Less than 8 bullets, 300ms delay between bullets
+                            if (!Paused && bulletList.Count < 8 && lastShotTime < timer.ElapsedMilliseconds-300)
                             {
-                                //Get the ships region
-                                Region shipRegion = new Region(ship.GetPath());
-                                //Intersect the regions
-                                shipRegion.Intersect(asteroidRegion);
-                                //Check if there is any collision
-                                if(shipRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
-                                {
-                                    //Lose a life
-                                    if(shipLives > 0)
-                                        shipLives--;
-
-                                    //Kill the asteroid
-                                    asteroid.IsMarkedForDeath = true;
-                                }
+                                bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
+                                lastShotTime = timer.ElapsedMilliseconds;
                             }
 
-                            //If we are within hit range for bullet, check collision
-                            foreach (BaseShape bullet in bulletList)
+                        }
+
+                        //Spread shot
+                        if (keyControls.Inputs[Keys.S])
+                        {
+                            if (!Paused && bulletList.Count < 5 && lastShotTime < timer.ElapsedMilliseconds - 300)
                             {
-                                if (GetDistance(asteroid, bullet) < Math.Pow(bullet.Size,2) + Math.Pow(asteroid.Size,5))
+                                //how much to change the angle
+                                float delta = BaseShape.degreesToRadians(10);
+                                //get angle of the ship
+                                float angle = ship.getRotation() - delta;
+
+                                for (int i = 0; i < 3; i++)
                                 {
-                                    //Get the bullets region
-                                    Region bulletRegion = new Region(bullet.GetPath());
+                                    //Make a bullet
+                                    bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], angle));
+                                    //increase angle
+                                    angle += delta;
+                                }
+                            
+                                lastShotTime = timer.ElapsedMilliseconds;
+                            }
+                        }
+
+                        //Check for a new button state, for pausing
+                        if (keyControls.Inputs[Keys.P] != startPaused)
+                        {
+                            //Got a new button state
+                            startPaused = keyControls.Inputs[Keys.P];
+                            //Check if new button state is pressed down
+                            if (startPaused)
+                            {
+                                //Toggle the game's pause
+                                Paused = !Paused;
+                                //Stop the spawn timer if we are paused
+                                timer_Spawn.Enabled = !Paused;
+                            }
+                        }
+
+                        //Game is not paused, do all things
+                        if (!Paused)
+                        {
+                            //Tick through all of our shapes
+                            asteroidList.ForEach(shape => shape.Tick(ClientSize));
+                            bulletList.ForEach(shape => shape.Tick(ClientSize));
+                            ship.Tick(ClientSize);
+
+                            //Do collision calculations
+                            foreach (BaseShape asteroid in asteroidList.ToList())
+                            {
+                                //Get the asteroids region
+                                Region asteroidRegion = new Region(asteroid.GetPath());
+
+                                //If we are within hit range for ship, check collision
+                                if (GetDistance(asteroid, ship) < Math.Pow(ship.Size,2) + Math.Pow(asteroid.Size,2))
+                                {
+                                    //Get the ships region
+                                    Region shipRegion = new Region(ship.GetPath());
                                     //Intersect the regions
-                                    bulletRegion.Intersect(asteroidRegion);
+                                    shipRegion.Intersect(asteroidRegion);
                                     //Check if there is any collision
-                                    if (bulletRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
+                                    if(shipRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
                                     {
-                                        //Check if any asteroids can be broken up.
-                                        //Add score based on size. Large worth less than small
-                                        if (asteroid.Size == Asteroid.MAXSIZE)
-                                        {
-                                            //Large asteroid can break apart into 2 new, smaller asteroids
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                        //Lose a life
+                                        if(shipLives > 0)
+                                            shipLives--;
 
-                                            //Score based on asteroid size
-                                            score += 100;
-                                        }
-                                        else if (asteroid.Size >= Asteroid.MAXSIZE / 2)
-                                        {
-                                            //Medium asteroid can break apart into 3 new, smaller asteroids
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
-                                            asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
-
-                                            //Score based on asteroid size
-                                            score += 200;
-                                        }
-                                        else
-                                        {
-                                            //Score based on asteroid size
-                                            score += 300;
-                                        }
-                                        
-                                        //Kill bullet and asteroid
+                                        //Kill the asteroid
                                         asteroid.IsMarkedForDeath = true;
-                                        bullet.IsMarkedForDeath = true;
+                                    }
+                                }
+
+                                //If we are within hit range for bullet, check collision
+                                foreach (BaseShape bullet in bulletList)
+                                {
+                                    if (GetDistance(asteroid, bullet) < Math.Pow(bullet.Size,2) + Math.Pow(asteroid.Size,5))
+                                    {
+                                        //Get the bullets region
+                                        Region bulletRegion = new Region(bullet.GetPath());
+                                        //Intersect the regions
+                                        bulletRegion.Intersect(asteroidRegion);
+                                        //Check if there is any collision
+                                        if (bulletRegion.GetRegionScans(new System.Drawing.Drawing2D.Matrix()).Length > 0)
+                                        {
+                                            //Check if any asteroids can be broken up.
+                                            //Add score based on size. Large worth less than small
+                                            if (asteroid.Size == Asteroid.MAXSIZE)
+                                            {
+                                                //Large asteroid can break apart into 2 new, smaller asteroids
+                                                asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                                asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+
+                                                //Score based on asteroid size
+                                                score += 100;
+                                            }
+                                            else if (asteroid.Size >= Asteroid.MAXSIZE / 2)
+                                            {
+                                                //Medium asteroid can break apart into 3 new, smaller asteroids
+                                                asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                                asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+                                                asteroidList.Add(new Asteroid(asteroid.Position, asteroid.Size - (Asteroid.MAXSIZE / 3)));
+
+                                                //Score based on asteroid size
+                                                score += 200;
+                                            }
+                                            else
+                                            {
+                                                //Score based on asteroid size
+                                                score += 300;
+                                            }
+                                        
+                                            //Kill bullet and asteroid
+                                            asteroid.IsMarkedForDeath = true;
+                                            bullet.IsMarkedForDeath = true;
+                                        }
                                     }
                                 }
                             }
-                        }
                         
-                        //Check if we have more than/equal to newLife points
-                        if (score - newLife >= 0)
-                        {
-                            shipLives++;
-                            newLife += 10000; //This is assuming 10,000 is your starting value
-                        }
-                        //Check if we are out of lives
-                        if (shipLives <= 0)
-                        {
-                            //Call game over
-                            GameOverScreen();
+                            //Check if we have more than/equal to newLife points
+                            if (score - newLife >= 0)
+                            {
+                                shipLives++;
+                                newLife += 10000; //This is assuming 10,000 is your starting value
+                            }
+                            //Check if we are out of lives
+                            if (shipLives <= 0)
+                            {
+                                //Game over
+                                gameState = gameState.GameOver;
+                            }
+
+                            //Remove all the shapes that are marked for death
+                            asteroidList.RemoveAll(shape => shape.IsMarkedForDeath);
+                            bulletList.RemoveAll(shape => shape.IsMarkedForDeath);
                         }
 
-                        //Remove all the shapes that are marked for death
-                        asteroidList.RemoveAll(shape => shape.IsMarkedForDeath);
-                        bulletList.RemoveAll(shape => shape.IsMarkedForDeath);
+
+                        //Put our shapes on the screen
+                        ship.Render(Color.Yellow, bg.Graphics);
+                        asteroidList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
+                        bulletList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
+                        bg.Graphics.DrawString($"Score: {score}\nLives: {shipLives}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientRectangle);
+
+                        //Game is paused, draw pause over top screen
+                        if (Paused)
+                        {
+                            //Draw a black fade over the screen
+                            bg.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(200, Color.Black)), ClientRectangle);
+                            bg.Graphics.DrawString("Paused", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
+                        }
+
+                        //Render our shapes
+                        bg.Render();
                     }
-
-
-                    //Put our shapes on the screen
-                    ship.Render(Color.Yellow, bg.Graphics);
-                    asteroidList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
-                    bulletList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
-                    bg.Graphics.DrawString($"Score: {score}\nLives: {shipLives}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientRectangle);
-
-                    //Game is paused, draw pause over top screen
-                    if (Paused)
+                }
+            }
+            else if (gameState == gameState.GameOver)
+            {
+                //Write on the screen
+                using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
+                {
+                    using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
                     {
-                        //Draw a black fade over the screen
-                        bg.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(200, Color.Black)), ClientRectangle);
-                        bg.Graphics.DrawString("Paused", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
-                    }
+                        bg.Graphics.Clear(Color.Black);
 
-                    //Render our shapes
-                    bg.Render();
+                        //Give instructions
+                        int startX = ClientSize.Width / 4;
+                        bg.Graphics.DrawString("Game Over", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
+                        bg.Graphics.DrawString($"Score: {score}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+
+                        bg.Render();
+                    }
+                }
+
+                if (keyControls.Inputs[Keys.Space])
+                {
+                    gameState = gameState.Start;
                 }
             }
         }
