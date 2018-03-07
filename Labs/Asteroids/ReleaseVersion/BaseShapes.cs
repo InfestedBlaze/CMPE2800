@@ -209,23 +209,27 @@ class Asteroid : BaseShape
 
     public override void Tick(Size canvSize)
     {
+        //The asteroids have a 100 pixel buffer around the screen.
+        //This helps give a safe spawn area for them, and the
+        //illusion of a spherical game world.
+
         //We would go outside the horizontal window, wrap to other edge
-        if (Position.X + XSpeed < 0)
+        if (Position.X + XSpeed < -100)
         {
-            Position = new PointF(canvSize.Width, Position.Y);
+            Position = new PointF(canvSize.Width + 100, Position.Y);
         }
-        else if (Position.X + XSpeed > canvSize.Width)
+        else if (Position.X + XSpeed > canvSize.Width + 100)
         {
-            Position = new PointF(0, Position.Y);
+            Position = new PointF(-100, Position.Y);
         }
         //We would go outside the vertical window, wrap to other edge
-        if (Position.Y + YSpeed < 0)
+        if (Position.Y + YSpeed < -100)
         {
-            Position = new PointF(Position.X, canvSize.Height);
+            Position = new PointF(Position.X, canvSize.Height + 100);
         }
-        else if (Position.Y + YSpeed > canvSize.Height)
+        else if (Position.Y + YSpeed > canvSize.Height + 100)
         {
-            Position = new PointF(Position.X, 0);
+            Position = new PointF(Position.X, -100);
         }
 
         base.Tick(canvSize);
@@ -269,7 +273,8 @@ class Bullet : BaseShape
     public override void Tick(Size canvSize)
     {
         //If we are outside the bounds of the canvas, we are dead
-        if(Position.X > canvSize.Width || Position.X < 0 || Position.Y > canvSize.Height || Position.Y < 0)
+        //Has the same game size as the asteroids.
+        if(Position.X > canvSize.Width + 100 || Position.X < -100 || Position.Y > canvSize.Height + 100 || Position.Y < -100)
         {
             IsMarkedForDeath = true;
         }

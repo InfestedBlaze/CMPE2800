@@ -25,7 +25,7 @@ namespace ReleaseVersion
 
         //Lives
         int shipLives = 3;
-        
+
         //Score
         int score = 0;
         int newLife = 10000; //This is how much score you need to get a new life
@@ -41,6 +41,12 @@ namespace ReleaseVersion
         bool Paused = false;        //Pauses the game when true
         bool startPaused = false;   //Determines the previous state of the pause button
 
+        //Variables for thruster
+        long timeStopped = 0;       //When you release the button, grab the time from timer
+        float ThrusterX = 0;        //The X speed to add to asteroids
+        float ThrusterY = 0;        //The Y speed to add to asteroids
+
+        //Open the game on the starting screen
         gameState gameState = gameState.Start;
 
         public Form1()
@@ -94,6 +100,7 @@ namespace ReleaseVersion
                 if (keyControls.Inputs[Keys.P])
                 {
                     gameState = gameState.Playing;
+                    timer_Spawn.Enabled = true;
                 }
             }
             else if (gameState == gameState.Playing)
@@ -136,9 +143,14 @@ namespace ReleaseVersion
 
                     //Special inputs
                     //Drive forward
-                    //if (keyControls.Inputs[Keys.W])
-                    //{
-                    //}
+                    if (keyControls.Inputs[Keys.W])
+                    {
+                        
+                    }
+                    else
+                    {
+
+                    }
 
                     //Fire single shot
                     if (keyControls.Inputs[Keys.Space])
@@ -310,6 +322,7 @@ namespace ReleaseVersion
                         int startX = ClientSize.Width / 4;
                         bg.Graphics.DrawString("Game Over", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
                         bg.Graphics.DrawString($"Score: {score}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
+                        bg.Graphics.DrawString("P to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
 
                         bg.Render();
                     }
@@ -317,15 +330,30 @@ namespace ReleaseVersion
 
                 if (keyControls.Inputs[Keys.P])
                 {
-                    gameState = gameState.Start;
+                    gameState = gameState.Playing;
                 }
             }
         }
 
         private void timer_Spawn_Tick(object sender, EventArgs e)
         {
+            //Increase the spawn speed as the game goes on.
             if (timer_Spawn.Interval > 1000) timer_Spawn.Interval--;
-            asteroidList.Add(new Asteroid(new PointF(randNum.Next(ClientSize.Width), randNum.Next(ClientSize.Height)), Asteroid.MAXSIZE));
+
+            float x = 0;
+            float y = 0;
+
+            //Don't allow asteroids to start near the ship.
+            do
+            {
+                x = randNum.Next(-100, ClientSize.Width + 100);
+            } while (x > 0 && x < ClientSize.Width);
+            do
+            {
+                y = randNum.Next(-100, ClientSize.Height + 100);
+            } while (y > 0 && y < ClientSize.Height);
+
+            asteroidList.Add(new Asteroid(new PointF(x, y), Asteroid.MAXSIZE));
         }
 
         private float GetDistance(BaseShape arg1, BaseShape arg2)

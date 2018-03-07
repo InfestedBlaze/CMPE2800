@@ -41,7 +41,6 @@
             // 
             // timer_Spawn
             // 
-            this.timer_Spawn.Enabled = true;
             this.timer_Spawn.Interval = 2000;
             this.timer_Spawn.Tick += new System.EventHandler(this.timer_Spawn_Tick);
             // 
