@@ -145,11 +145,13 @@ namespace ReleaseVersion
                     //Drive forward
                     if (keyControls.Inputs[Keys.W])
                     {
-                        
+                        ThrusterX = (float)Math.Cos(ship.getRotation());
+                        ThrusterY = (float)Math.Sin(ship.getRotation());
                     }
                     else
                     {
-
+                        ThrusterX = 0;
+                        ThrusterY = 0;
                     }
 
                     //Fire single shot
