@@ -23,6 +23,11 @@ namespace ReleaseVersion
             Position = inPosition;
             Colour = inColor;
         }
+
+        public void addPosition()
+        {
+
+        }
     }
 
     public partial class Form1 : Form
