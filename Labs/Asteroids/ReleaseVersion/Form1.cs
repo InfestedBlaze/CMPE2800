@@ -24,9 +24,31 @@ namespace ReleaseVersion
             Colour = inColor;
         }
 
-        public void addPosition()
+        public void addPosition(float X, float Y, Size inSize)
         {
+            X = Position.X + X;
+            Y = Position.Y + Y;
 
+            //Outside size boundary, warp to other side
+            if(X < 0)
+            {
+                X = inSize.Width;
+            }
+            else if(X > inSize.Width)
+            {
+                X = 0;
+            }
+            //Outside size boundary, warp to other side
+            if (Y < 0)
+            {
+                Y = inSize.Height;
+            }
+            else if (Y > inSize.Height)
+            {
+                Y = 0;
+            }
+
+            Position = new PointF(X, Y);
         }
     }
 
@@ -176,6 +198,9 @@ namespace ReleaseVersion
                         ThrusterY = (float)-Math.Sin(ship.getRotation() + Math.PI / 2);
                         //Add it to each asteroid
                         asteroidList.ForEach(ast => ast.ChangeSpeed(ThrusterX, ThrusterY));
+
+                        //Move stars
+                        starList.ForEach(star => star.addPosition(ThrusterX, ThrusterY, ClientSize));
                     }
 
                     //Fire single shot
@@ -187,13 +212,12 @@ namespace ReleaseVersion
                             bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
                             lastShotTime = timer.ElapsedMilliseconds;
                         }
-
                     }
 
                     //Spread shot
                     if (keyControls.Inputs[Keys.S])
                     {
-                        if (bulletList.Count < 5 && lastShotTime < timer.ElapsedMilliseconds - 300)
+                        if (bulletList.Count < 5 && lastShotTime < timer.ElapsedMilliseconds - 1000)
                         {
                             //how much to change the angle
                             float delta = BaseShape.degreesToRadians(10);
