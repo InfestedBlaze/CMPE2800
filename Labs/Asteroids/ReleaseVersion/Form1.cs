@@ -13,6 +13,18 @@ namespace ReleaseVersion
 {
     enum gameState { Start, Playing, GameOver}
 
+    struct Star
+    {
+        public PointF Position;
+        public readonly Color Colour;
+
+        public Star(PointF inPosition, Color inColor)
+        {
+            Position = inPosition;
+            Colour = inColor;
+        }
+    }
+
     public partial class Form1 : Form
     {
         //Only need to check here for inputs
@@ -22,6 +34,7 @@ namespace ReleaseVersion
         Ship ship;
         List<Asteroid> asteroidList = new List<Asteroid>();
         List<Bullet> bulletList = new List<Bullet>();
+        List<Star> starList = new List<Star>();
 
         //Lives
         int shipLives = 3;
@@ -42,7 +55,6 @@ namespace ReleaseVersion
         bool startPaused = false;   //Determines the previous state of the pause button
 
         //Variables for thruster
-        long timeStopped = 0;       //When you release the button, grab the time from timer
         float ThrusterX = 0;        //The X speed to add to asteroids
         float ThrusterY = 0;        //The Y speed to add to asteroids
 
@@ -53,6 +65,15 @@ namespace ReleaseVersion
         {
             InitializeComponent();
             ship = new Ship(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
+
+            //Make all of our stars
+            while(starList.Count < 300)
+            {
+                int x = randNum.Next(ClientSize.Width);
+                int y = randNum.Next(ClientSize.Height);
+
+                starList.Add(new Star(new PointF(x, y), Color.FromArgb(randNum.Next(int.Parse("FF000000", System.Globalization.NumberStyles.HexNumber), int.Parse("FFFFFFFF", System.Globalization.NumberStyles.HexNumber)))));
+            }
         }
 
         //Main form does nothing with the key codes. Sends it to our input handler
@@ -77,11 +98,11 @@ namespace ReleaseVersion
                         bg.Graphics.Clear(Color.Black);
 
                         //Give instructions
-                        int startX = ClientSize.Width / 4;
-                        bg.Graphics.DrawString("A/D to rotate", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
-                        bg.Graphics.DrawString("P to pause", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
-                        bg.Graphics.DrawString("Space/S to shoot", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
-                        bg.Graphics.DrawString("P to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 450);
+
+                        StringFormat sf = new StringFormat();
+                        sf.Alignment = StringAlignment.Center;
+                        bg.Graphics.DrawString("A/D to rotate\nP to pause\nSpace/S to shoot\nSpace to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width/2, ClientSize.Height/2 - 186, sf);
+                        bg.Graphics.DrawString("Left Stick to rotate\nStart to pause\nA/X to shoot\nA to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientSize.Width / 2, ClientSize.Height / 2, sf);
 
                         bg.Render();
                     }
@@ -97,7 +118,7 @@ namespace ReleaseVersion
                 lastShotTime = 0;
                 timer_Spawn.Interval = 2000;
 
-                if (keyControls.Inputs[Keys.P])
+                if (keyControls.Inputs[Keys.Space])
                 {
                     gameState = gameState.Playing;
                     timer_Spawn.Enabled = true;
@@ -145,13 +166,11 @@ namespace ReleaseVersion
                     //Drive forward
                     if (keyControls.Inputs[Keys.W])
                     {
-                        ThrusterX = (float)Math.Cos(ship.getRotation());
-                        ThrusterY = (float)Math.Sin(ship.getRotation());
-                    }
-                    else
-                    {
-                        ThrusterX = 0;
-                        ThrusterY = 0;
+                        //Get the forward direction of the ship
+                        ThrusterX = (float)-Math.Cos(ship.getRotation() + Math.PI  / 2);
+                        ThrusterY = (float)-Math.Sin(ship.getRotation() + Math.PI / 2);
+                        //Add it to each asteroid
+                        asteroidList.ForEach(ast => ast.ChangeSpeed(ThrusterX, ThrusterY));
                     }
 
                     //Fire single shot
@@ -268,7 +287,7 @@ namespace ReleaseVersion
                     }
 
                     //Check if we have more than/equal to newLife points
-                    if (score - newLife >= 0)
+                    if (score - newLife > 0)
                     {
                         shipLives++;
                         newLife += 10000; //This is assuming 10,000 is your starting value
@@ -291,8 +310,9 @@ namespace ReleaseVersion
                     {
                         //Clear our form of shapes
                         bg.Graphics.Clear(Color.Black);
-                        
+
                         //Put our shapes on the screen
+                        starList.ForEach(star => bg.Graphics.DrawRectangle(new Pen(new SolidBrush(star.Colour)), star.Position.X, star.Position.Y, 1, 1));
                         ship.Render(Color.Yellow, bg.Graphics);
                         asteroidList.ForEach(shape => shape.Render(Color.Red, bg.Graphics));
                         bulletList.ForEach(shape => shape.Render(Color.Yellow, bg.Graphics));
@@ -321,10 +341,9 @@ namespace ReleaseVersion
                         bg.Graphics.Clear(Color.Black);
 
                         //Give instructions
-                        int startX = ClientSize.Width / 4;
-                        bg.Graphics.DrawString("Game Over", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 300);
-                        bg.Graphics.DrawString($"Score: {score}", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 350);
-                        bg.Graphics.DrawString("P to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), startX, 400);
+                        StringFormat sf = new StringFormat();
+                        sf.Alignment = StringAlignment.Center;
+                        bg.Graphics.DrawString($"Game Over\nScore: {score}\nP to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
 
                         bg.Render();
                     }
@@ -332,7 +351,7 @@ namespace ReleaseVersion
 
                 if (keyControls.Inputs[Keys.P])
                 {
-                    gameState = gameState.Playing;
+                    gameState = gameState.Start;
                 }
             }
         }

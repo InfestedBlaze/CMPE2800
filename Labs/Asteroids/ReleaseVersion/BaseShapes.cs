@@ -237,6 +237,16 @@ class Asteroid : BaseShape
 
     //Maximum size of the asteroid
     public const int MAXSIZE = 10;
+
+    public void ChangeSpeed(float X, float Y)
+    {
+        XSpeed += X;
+        YSpeed += Y;
+
+        //Cap the speed at -5 or 5
+        XSpeed = Math.Min(Math.Max(XSpeed, -5), 5);
+        YSpeed = Math.Min(Math.Max(YSpeed, -5), 5);
+    }
 }
 
 class Bullet : BaseShape
@@ -261,8 +271,8 @@ class Bullet : BaseShape
 
     public Bullet(PointF inPoint, float direction) : base(inPoint, 2, 0, 0, 0, 0)
     {
-        this.XSpeed = (float)(Math.Cos(direction + Math.PI/2) * 5);
-        this.YSpeed = (float)(Math.Sin(direction + Math.PI / 2) * 5);
+        this.XSpeed = (float)(Math.Cos(direction + Math.PI/2) * 10);
+        this.YSpeed = (float)(Math.Sin(direction + Math.PI / 2) * 10);
     }
 
     static Bullet()
