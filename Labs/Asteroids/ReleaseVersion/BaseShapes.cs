@@ -243,9 +243,9 @@ class Asteroid : BaseShape
         XSpeed += X;
         YSpeed += Y;
 
-        //Cap the speed at -5 or 5
-        XSpeed = Math.Min(Math.Max(XSpeed, -5), 5);
-        YSpeed = Math.Min(Math.Max(YSpeed, -5), 5);
+        //Cap the speed at -10 or 10
+        XSpeed = Math.Min(Math.Max(XSpeed, -10), 10);
+        YSpeed = Math.Min(Math.Max(YSpeed, -10), 10);
     }
 }
 
@@ -283,8 +283,7 @@ class Bullet : BaseShape
     public override void Tick(Size canvSize)
     {
         //If we are outside the bounds of the canvas, we are dead
-        //Has the same game size as the asteroids.
-        if(Position.X > canvSize.Width + 100 || Position.X < -100 || Position.Y > canvSize.Height + 100 || Position.Y < -100)
+        if(Position.X > canvSize.Width || Position.X < 0 || Position.Y > canvSize.Height || Position.Y < 0)
         {
             IsMarkedForDeath = true;
         }

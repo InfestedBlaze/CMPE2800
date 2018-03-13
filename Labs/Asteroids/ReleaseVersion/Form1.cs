@@ -25,13 +25,12 @@ namespace ReleaseVersion
     enum gameState { Start, Playing, GameOver}
 
     //Background for our play screen
-    //MUST be a class, otherwise our position doesn't change ----LEARN WHY --Reference type vs Value type???
     class Star
     {
         //Where we are on our screen
-        public PointF Position;
+        public PointF Position { get; private set; }
         //What colour we are
-        public Color Colour;
+        public Color Colour { get; private set; }
 
         public Star(PointF inPosition, Color inColor)
         {
@@ -147,8 +146,8 @@ namespace ReleaseVersion
                         //Give instructions
                         StringFormat sf = new StringFormat();
                         sf.Alignment = StringAlignment.Center;
-                        bg.Graphics.DrawString("A/D to rotate\nP to pause\nSpace/S to shoot\nSpace to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width/2, ClientSize.Height/2 - 186, sf);
-                        bg.Graphics.DrawString("Left Stick to rotate\nStart to pause\nA/X to shoot\nA to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientSize.Width / 2, ClientSize.Height / 2, sf);
+                        bg.Graphics.DrawString("W to boost\nA/D to rotate\nP to pause\nSpace/S to shoot\nSpace to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width/2, ClientSize.Height/2 - 186, sf);
+                        bg.Graphics.DrawString("B to boost\nLeft Stick to rotate\nStart to pause\nA/X to shoot\nA to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Green), ClientSize.Width / 2, ClientSize.Height / 2, sf);
 
                         bg.Render();
                     }
@@ -400,7 +399,7 @@ namespace ReleaseVersion
                         //Give instructions
                         StringFormat sf = new StringFormat();
                         sf.Alignment = StringAlignment.Center;
-                        bg.Graphics.DrawString($"Game Over\nScore: {score}\nP/A to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
+                        bg.Graphics.DrawString($"Game Over\nScore: {score}\nPause to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
 
                         bg.Render();
                     }
