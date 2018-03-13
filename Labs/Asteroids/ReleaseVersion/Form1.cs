@@ -1,4 +1,14 @@
-﻿using System;
+﻿/* Author:      Nicholas Wasylyshyn
+ * Date:        March 12, 2018
+ * Description: This is an asteroids game.
+ * You pilot a ship using the keyboard or an
+ * XBOX controller. Your goal is to shoot as
+ * many asteroids and get as large of a score
+ * as possible before dying. Asteroids will
+ * spawn in on a timer and will spawn faster
+ * based on how long you have played.
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,12 +21,17 @@ using System.Diagnostics;
 
 namespace ReleaseVersion
 {
+    //Different game states will determine what screen we are on
     enum gameState { Start, Playing, GameOver}
 
-    struct Star
+    //Background for our play screen
+    //MUST be a class, otherwise our position doesn't change ----LEARN WHY --Reference type vs Value type???
+    class Star
     {
+        //Where we are on our screen
         public PointF Position;
-        public readonly Color Colour;
+        //What colour we are
+        public Color Colour;
 
         public Star(PointF inPosition, Color inColor)
         {
@@ -24,8 +39,9 @@ namespace ReleaseVersion
             Colour = inColor;
         }
 
-        public void addPosition(float X, float Y, Size inSize)
+        public void changePosition(float X, float Y, Size inSize)
         {
+            //Get new position
             X = Position.X + X;
             Y = Position.Y + Y;
 
@@ -48,6 +64,7 @@ namespace ReleaseVersion
                 Y = 0;
             }
 
+            //Set new position
             Position = new PointF(X, Y);
         }
     }
@@ -82,8 +99,8 @@ namespace ReleaseVersion
         bool startPaused = false;   //Determines the previous state of the pause button
 
         //Variables for thruster
-        float ThrusterX = 0;        //The X speed to add to asteroids
-        float ThrusterY = 0;        //The Y speed to add to asteroids
+        float ThrusterX = 0;        //The X speed to add to asteroids/stars
+        float ThrusterY = 0;        //The Y speed to add to asteroids/stars
 
         //Open the game on the starting screen
         gameState gameState = gameState.Start;
@@ -91,6 +108,8 @@ namespace ReleaseVersion
         public Form1()
         {
             InitializeComponent();
+
+            //Make our ship
             ship = new Ship(new PointF(ClientSize.Width / 2, ClientSize.Height / 2));
 
             //Make all of our stars
@@ -116,8 +135,9 @@ namespace ReleaseVersion
         //Everything our game does is in here
         private void timer_Game_Tick(object sender, EventArgs e)
         {
-            if (gameState == gameState.Start)
+            if (gameState == gameState.Start) //On the start screen. Give instructions, reset everything
             {
+                //Write to the screen
                 using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
                 {
                     using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
@@ -125,7 +145,6 @@ namespace ReleaseVersion
                         bg.Graphics.Clear(Color.Black);
 
                         //Give instructions
-
                         StringFormat sf = new StringFormat();
                         sf.Alignment = StringAlignment.Center;
                         bg.Graphics.DrawString("A/D to rotate\nP to pause\nSpace/S to shoot\nSpace to start", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width/2, ClientSize.Height/2 - 186, sf);
@@ -145,6 +164,7 @@ namespace ReleaseVersion
                 lastShotTime = 0;
                 timer_Spawn.Interval = 2000;
 
+                //Wait for the space button
                 if (keyControls.Inputs[Keys.Space])
                 {
                     gameState = gameState.Playing;
@@ -186,6 +206,7 @@ namespace ReleaseVersion
                     }
                     else
                     {
+                        //Stop rotating
                         ship.setRotationIncrement(0);
                     }
 
@@ -198,9 +219,8 @@ namespace ReleaseVersion
                         ThrusterY = (float)-Math.Sin(ship.getRotation() + Math.PI / 2);
                         //Add it to each asteroid
                         asteroidList.ForEach(ast => ast.ChangeSpeed(ThrusterX, ThrusterY));
-
                         //Move stars
-                        starList.ForEach(star => star.addPosition(ThrusterX, ThrusterY, ClientSize));
+                        starList.ForEach(star => star.changePosition(ThrusterX, ThrusterY, ClientSize));
                     }
 
                     //Fire single shot
@@ -209,7 +229,9 @@ namespace ReleaseVersion
                         //Less than 8 bullets, 300ms delay between bullets
                         if (bulletList.Count < 8 && lastShotTime < timer.ElapsedMilliseconds - 300)
                         {
+                            //Make a bullet
                             bulletList.Add(new Bullet(ship.GetPath().PathPoints[0], ship.getRotation()));
+                            //Change when we last shot
                             lastShotTime = timer.ElapsedMilliseconds;
                         }
                     }
@@ -217,7 +239,8 @@ namespace ReleaseVersion
                     //Spread shot
                     if (keyControls.Inputs[Keys.S])
                     {
-                        if (bulletList.Count < 5 && lastShotTime < timer.ElapsedMilliseconds - 1000)
+                        //must have less than 5 bullet (max 8), and 3x as much time before our last shot compared to single shot
+                        if (bulletList.Count < 5 && lastShotTime < timer.ElapsedMilliseconds - 900)
                         {
                             //how much to change the angle
                             float delta = BaseShape.degreesToRadians(10);
@@ -231,7 +254,7 @@ namespace ReleaseVersion
                                 //increase angle
                                 angle += delta;
                             }
-
+                            //Change when we last shot
                             lastShotTime = timer.ElapsedMilliseconds;
                         }
                     }
@@ -269,6 +292,7 @@ namespace ReleaseVersion
                         //If we are within hit range for bullet, check collision
                         foreach (Bullet bullet in bulletList)
                         {
+                            //Check if we are in range to hit
                             if (GetDistance(asteroid, bullet) < Math.Pow(bullet.Size, 2) + Math.Pow(asteroid.Size, 5))
                             {
                                 //Get the bullets region
@@ -305,8 +329,6 @@ namespace ReleaseVersion
                                         score += 300;
                                     }
 
-                                    asteroidList.Remove(asteroid);
-
                                     //Kill bullet and asteroid
                                     asteroid.IsMarkedForDeath = true;
                                     bullet.IsMarkedForDeath = true;
@@ -319,13 +341,15 @@ namespace ReleaseVersion
                     if (score - newLife > 0)
                     {
                         shipLives++;
-                        newLife += 10000; //This is assuming 10,000 is your starting value
+                        newLife += 10000; //Get our new point for a new life
                     }
                     //Check if we are out of lives
                     if (shipLives <= 0)
                     {
                         //Game over
                         gameState = gameState.GameOver;
+                        //Stop spawning asteroids.
+                        timer_Spawn.Enabled = false;
                     }
 
                     //Remove all the shapes that are marked for death
@@ -333,6 +357,7 @@ namespace ReleaseVersion
                     bulletList.RemoveAll(shape => shape.IsMarkedForDeath);
                 }
 
+                //Draw everything
                 using (BufferedGraphicsContext bgc = new BufferedGraphicsContext())
                 {
                     using (BufferedGraphics bg = bgc.Allocate(CreateGraphics(), ClientRectangle))
@@ -352,7 +377,10 @@ namespace ReleaseVersion
                         {
                             //Draw a black fade over the screen
                             bg.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(200, Color.Black)), ClientRectangle);
-                            bg.Graphics.DrawString("Paused", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientRectangle);
+                            //Centered, red text
+                            StringFormat sf = new StringFormat();
+                            sf.Alignment = StringAlignment.Center;
+                            bg.Graphics.DrawString("Paused", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.Red), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
                         }
 
                         //Render our shapes
@@ -372,7 +400,7 @@ namespace ReleaseVersion
                         //Give instructions
                         StringFormat sf = new StringFormat();
                         sf.Alignment = StringAlignment.Center;
-                        bg.Graphics.DrawString($"Game Over\nScore: {score}\nP to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
+                        bg.Graphics.DrawString($"Game Over\nScore: {score}\nP/A to restart", new Font(FontFamily.GenericMonospace, 20), new SolidBrush(Color.White), ClientSize.Width / 2, ClientSize.Height / 2 - 61, sf);
 
                         bg.Render();
                     }
@@ -390,6 +418,7 @@ namespace ReleaseVersion
             //Increase the spawn speed as the game goes on.
             if (timer_Spawn.Interval > 1000) timer_Spawn.Interval--;
 
+            //Where we will spawn our asteroid
             float x = 0;
             float y = 0;
 
@@ -408,6 +437,8 @@ namespace ReleaseVersion
 
         private float GetDistance(BaseShape arg1, BaseShape arg2)
         {
+            //Used to get the distance from our objects.
+            //Determines whether we do the collision calculations.
             // _/{ (X2 - X1)^2 + (Y2 - Y1)^2 }
             return (float)Math.Sqrt(Math.Pow(arg2.Position.X - arg1.Position.X, 2) + Math.Pow(arg2.Position.Y - arg1.Position.Y, 2));
         }
