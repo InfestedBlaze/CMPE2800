@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{F9A99B16-3FF6-4DCD-864A-191562D59CAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0021589D-4291-4288-84BA-F0C5043AB4E9} = {0021589D-4291-4288-84BA-F0C5043AB4E9}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{499661D5-C4C9-43BE-BA03-1BD14D0347F4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0021589D-4291-4288-84BA-F0C5043AB4E9} = {0021589D-4291-4288-84BA-F0C5043AB4E9}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35431F9B-0E8C-4B1E-A93A-7D24BBA682DF}"
+	ProjectSection(SolutionItems) = preProject
+		GuessTrany.dll = GuessTrany.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connection", "Connection\Connection.csproj", "{0021589D-4291-4288-84BA-F0C5043AB4E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F9A99B16-3FF6-4DCD-864A-191562D59CAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9A99B16-3FF6-4DCD-864A-191562D59CAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9A99B16-3FF6-4DCD-864A-191562D59CAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9A99B16-3FF6-4DCD-864A-191562D59CAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{499661D5-C4C9-43BE-BA03-1BD14D0347F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{499661D5-C4C9-43BE-BA03-1BD14D0347F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{499661D5-C4C9-43BE-BA03-1BD14D0347F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{499661D5-C4C9-43BE-BA03-1BD14D0347F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0021589D-4291-4288-84BA-F0C5043AB4E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0021589D-4291-4288-84BA-F0C5043AB4E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0021589D-4291-4288-84BA-F0C5043AB4E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0021589D-4291-4288-84BA-F0C5043AB4E9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37CBF3A5-0DA0-4A9F-B235-C121AF643E13}
+	EndGlobalSection
+EndGlobal
