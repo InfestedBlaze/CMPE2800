@@ -20,6 +20,10 @@ namespace Server
         private Socket ListenSocket = null;
         private Connection.Connection ConnectionSocket = null;
 
+        //delegates for outcomes
+        private delegate void delVoidSocket(Socket soc);
+        private delegate void delVoidString(string err);
+
         public Server()
         {
             InitializeComponent();
@@ -59,7 +63,14 @@ namespace Server
             {
                 //Guess was correct
                 reply = 0;
-                Invoke(new delVoidVoid(ChangeAnswer));
+                try
+                {
+                    Invoke(new delVoidVoid(ChangeAnswer));
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
             //Transmit reply
@@ -93,12 +104,25 @@ namespace Server
                     StartListen();
                 }
             }
-
             try
             {
-                
                 ListenSocket.Listen(5);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            try
+            {
                 ListenSocket.BeginAccept(cbAccept, ListenSocket);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            try
+            {
+                Invoke(new Action(() => Text = "Server : Listening"));
             }
             catch
             {
@@ -106,9 +130,6 @@ namespace Server
             }
         }
 
-        //delegates for outcomes
-        private delegate void delVoidSocket(Socket soc);
-        private delegate void delVoidString(string err);
 
         //cbAccept callback when listen sock forms a connection
         private void cbAccept(IAsyncResult ar)
@@ -117,12 +138,27 @@ namespace Server
             try
             {
                 Socket csok = lsok.EndAccept(ar);
-                Invoke(new delVoidSocket(cbHandleAccept), csok);
+                try
+                {
+                    Invoke(new delVoidSocket(cbHandleAccept), csok);
+                }
+                catch
+                {
+                    return;
+                }
             }
             catch(Exception ex)
             {
-                Invoke(new delVoidString(cbHandleError), ex.Message);
+                try
+                {
+                    Invoke(new delVoidString(cbHandleError), ex.Message);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
+            
         }
 
         //cbAccepts and cbErrors
@@ -131,6 +167,14 @@ namespace Server
             ConnectionSocket = new Connection.Connection(sok, cbDataReceived, cbDisconnect);
             ListenSocket.Close();
             ListenSocket = null;
+            try
+            {
+                Invoke(new Action(() => Text = "Server : Connected"));
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            } 
         }
 
         private void cbHandleError(string err)
@@ -143,6 +187,14 @@ namespace Server
             if (ConnectionSocket != null)
             {
                 ConnectionSocket.SoftDisconnect();
+                try
+                {
+                    Invoke(new Action(() => Text = "Server : Disconnected"));
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
     }

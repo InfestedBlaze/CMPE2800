@@ -60,7 +60,7 @@
             this.UI_trackBar_Guess.Maximum = 1000;
             this.UI_trackBar_Guess.Minimum = 1;
             this.UI_trackBar_Guess.Name = "UI_trackBar_Guess";
-            this.UI_trackBar_Guess.Size = new System.Drawing.Size(259, 65);
+            this.UI_trackBar_Guess.Size = new System.Drawing.Size(259, 45);
             this.UI_trackBar_Guess.TabIndex = 1;
             this.UI_trackBar_Guess.TickFrequency = 50;
             this.UI_trackBar_Guess.TickStyle = System.Windows.Forms.TickStyle.Both;
@@ -103,7 +103,6 @@
             // 
             this.UI_button_SendGuess.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.UI_button_SendGuess.Enabled = false;
             this.UI_button_SendGuess.Location = new System.Drawing.Point(12, 108);
             this.UI_button_SendGuess.Name = "UI_button_SendGuess";
             this.UI_button_SendGuess.Size = new System.Drawing.Size(260, 23);

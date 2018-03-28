@@ -14,6 +14,10 @@ namespace Client
 {
     public partial class Client : Form
     {
+        private delegate void delVoidStatus(int i);
+        private delegate void delVoidString(string x);
+        private delegate void delVoidVoid();
+
         private int guess = 0;
         private Connection.Connection Connection = null;
 
@@ -55,11 +59,12 @@ namespace Client
 
         private void UI_button_SendGuess_Click(object sender, EventArgs e)
         {
-            //Transmit guess
-            Connection.SendData(guess);
+            if (Connection != null)
+            {
+                //Transmit guess
+                Connection.SendData(guess);
+            }
         }
-
-        private delegate void delVoidStatus(int i);
 
         private void TrackBarUpdate(int i)
         {
@@ -94,25 +99,43 @@ namespace Client
         //When we receive the data from the connection
         private void cbDataReceived(int Data)
         {
-            Invoke(new delVoidStatus(TrackBarUpdate), Data);
+            try
+            {
+                Invoke(new delVoidStatus(TrackBarUpdate), Data);
+            }
+            catch
+            {
+                return;
+            }
         }
 
         //When we disconnect from our socket server
         private void cbDisconnect(string inMessage)
         {
-            Invoke(new delVoidString(cbDisconnectPart2), inMessage);
+            try
+            {
+                Invoke(new delVoidString(cbDisconnectPart2), inMessage);
+            }
+            catch
+            {
+                return;
+            }
         }
-
-        private delegate void delVoidString(string x);
+        
         private void cbDisconnectPart2(string inMessage)
         {
             UI_label_Status.Text = inMessage;
 
+            //Reset trackbar
+            UI_trackBar_Guess.Minimum = 1;
+            UI_trackBar_Guess.Maximum = 1000;
+            UI_label_Min.Text = "1";
+            UI_label_Max.Text = "1000";
+
             //Select a new port
             ClientConnectSelect();
         }
-
-        private delegate void delVoidVoid();
+        
         //Socket connection function
         private void SocketConnect(int port, string ip)
         {
@@ -134,21 +157,33 @@ namespace Client
             try
             {
                 temp.EndConnect(asyncResult);
-                //Tell the user the connection succeeded
-                Invoke(new Action(() => UI_label_Status.Text = "Connection succeeded"));
+                
                 //Create our connection
                 Connection = new Connection.Connection(temp, cbDataReceived, cbDisconnect);
-                //Enable our guess button
-                Invoke(new Action(() => UI_button_SendGuess.Enabled = true));
+                
+                try
+                {
+                    //Tell the user the connection succeeded
+                    Invoke(new Action(() => UI_label_Status.Text = "Connection succeeded"));
+                }
+                catch
+                {}
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                //Tell the user that the connection failed
-                Invoke(new Action(() => UI_label_Status.Text = "Connection failed"));
+                try
+                {
+                    //Tell the user that the connection failed
+                    Invoke(new Action(() => UI_label_Status.Text = "Connection failed"));
 
-                //Select a new port
-                Invoke(new delVoidVoid(ClientConnectSelect));
+                    //Select a new port
+                    Invoke(new delVoidVoid(ClientConnectSelect));
+                }
+                catch
+                {
+
+                }
             }
         }
 
