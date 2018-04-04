@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using mdtypes;
 
 namespace LineDrawerClient
 {
@@ -50,6 +51,9 @@ namespace LineDrawerClient
             UI_StatusStrip.Items[2].Text = $"Thickness: {inThick}";
         }
 
-        
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            //Make line segments, send them to the server
+        }
     }
 }

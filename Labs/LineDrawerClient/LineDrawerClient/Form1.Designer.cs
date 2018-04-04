@@ -118,6 +118,7 @@
             this.Text = "Line Drawer Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.UI_StatusStrip.ResumeLayout(false);
             this.UI_StatusStrip.PerformLayout();
             this.ResumeLayout(false);
