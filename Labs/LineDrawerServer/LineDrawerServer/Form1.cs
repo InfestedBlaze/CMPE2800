@@ -143,7 +143,8 @@ namespace LineDrawerServer
                                 };
             UI_dataGridView_Clients.DataSource = bs;
 
-            long Frames, Bytes;
+            long Frames;
+            float Bytes;
             lock (clientList)
             {
                 Frames = clientList.Sum(client => client.framesRx);
