@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.UI_toolStripStatusLabel_TotalBytes = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_TotalFrames = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_dataGridView_Clients = new System.Windows.Forms.DataGridView();
+            this.timer_Update = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.UI_dataGridView_Clients)).BeginInit();
             this.SuspendLayout();
@@ -70,6 +72,12 @@
             this.UI_dataGridView_Clients.Size = new System.Drawing.Size(291, 375);
             this.UI_dataGridView_Clients.TabIndex = 1;
             // 
+            // timer_Update
+            // 
+            this.timer_Update.Enabled = true;
+            this.timer_Update.Interval = 50;
+            this.timer_Update.Tick += new System.EventHandler(this.timer_Update_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -94,6 +102,7 @@
         private System.Windows.Forms.ToolStripStatusLabel UI_toolStripStatusLabel_TotalBytes;
         private System.Windows.Forms.ToolStripStatusLabel UI_toolStripStatusLabel_TotalFrames;
         private System.Windows.Forms.DataGridView UI_dataGridView_Clients;
+        private System.Windows.Forms.Timer timer_Update;
     }
 }
 

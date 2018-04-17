@@ -20,8 +20,9 @@ namespace LineDrawerServer
 
         private Socket listenerSocket = null;
         private List<Connection> clientList = new List<Connection>();
-
         private Queue<LineSegment> lines = new Queue<LineSegment>();
+
+        private bool UpdateFlag = false;
 
         public Form1()
         {
@@ -31,6 +32,7 @@ namespace LineDrawerServer
             thread.IsBackground = true;
             thread.Start();
         }
+
         private void Form1_Shown(object sender, EventArgs e)
         {
             try
@@ -85,6 +87,8 @@ namespace LineDrawerServer
             Connection temp = new Connection(connectedSocket, cbDisconnect, cbError, cbLine);
             lock (clientList)
                 clientList.Add(temp);
+
+            UpdateFlag = true;
         }
 
         private void cbDisconnect(Connection connection, string message)
@@ -105,6 +109,8 @@ namespace LineDrawerServer
             //Send each line segment to our queue
             lock (lines)
                 lines.Enqueue(ls);
+
+            Invoke(new Action(() => UpdateFlag = true));
         }
         
         private void SendLinesThread()
@@ -120,8 +126,6 @@ namespace LineDrawerServer
 
                 lock (clientList)
                     clientList.ForEach(client => client.SendData(sendLine));
-
-                Invoke(new delVoidVoid(bindData));
             }
         }
 
@@ -134,7 +138,7 @@ namespace LineDrawerServer
                                 {
                                     Address = client.address,
                                     FramesReceieved = client.framesRx,
-                                    DestackAverage = client.framesRx / client.receiveEvents,
+                                    DestackAverage = client.framesRx / (float)client.receiveEvents,
                                     Fragments = client.fragments
                                 };
             UI_dataGridView_Clients.DataSource = bs;
@@ -145,8 +149,46 @@ namespace LineDrawerServer
                 Frames = clientList.Sum(client => client.framesRx);
                 Bytes = clientList.Sum(client => client.bytesRx);
             }
+
+            int magnitude = 0;
+            while (Bytes >= 1000)
+            {
+                Bytes /= 1000;
+                magnitude++;
+            }
+            string mag = "";
+            switch (magnitude)
+            {
+                case 1:
+                    mag = "K";
+                    break;
+                case 2:
+                    mag = "M";
+                    break;
+                case 3:
+                    mag = "G";
+                    break;
+                case 4:
+                    mag = "T";
+                    break;
+                case 5:
+                    mag = "P";
+                    break;
+                default:
+                    mag = "?";
+                    break;
+            }
+
             UI_toolStripStatusLabel_TotalFrames.Text = $"Total Frames: {Frames}";
-            UI_toolStripStatusLabel_TotalBytes.Text = $"Total Bytes: {Bytes}";
+            UI_toolStripStatusLabel_TotalBytes.Text = $"Total Bytes: {Bytes.ToString("F2")}{mag}B";
+        }
+
+        private void timer_Update_Tick(object sender, EventArgs e)
+        {
+            if (UpdateFlag)
+            {
+                bindData();
+            }
         }
     }
 }
