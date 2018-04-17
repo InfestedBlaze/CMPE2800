@@ -30,13 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.UI_StatusStrip = new System.Windows.Forms.StatusStrip();
+            this.UI_toolStripSplitLabel_Connect = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_Colour = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_ThicknessStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_FramesRecieved = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_FragmentsCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_toolStripStatusLabel_DestackAverage = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.UI_toolStripSplitLabel_Connect = new System.Windows.Forms.ToolStripStatusLabel();
             this.UI_StatusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +55,16 @@
             this.UI_StatusStrip.Size = new System.Drawing.Size(634, 24);
             this.UI_StatusStrip.TabIndex = 0;
             this.UI_StatusStrip.Text = "statusStrip1";
+            // 
+            // UI_toolStripSplitLabel_Connect
+            // 
+            this.UI_toolStripSplitLabel_Connect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.UI_toolStripSplitLabel_Connect.Image = ((System.Drawing.Image)(resources.GetObject("UI_toolStripSplitLabel_Connect.Image")));
+            this.UI_toolStripSplitLabel_Connect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.UI_toolStripSplitLabel_Connect.Name = "UI_toolStripSplitLabel_Connect";
+            this.UI_toolStripSplitLabel_Connect.Size = new System.Drawing.Size(61, 19);
+            this.UI_toolStripSplitLabel_Connect.Text = "Connect...";
+            this.UI_toolStripSplitLabel_Connect.Click += new System.EventHandler(this.UI_toolStripSplitLabel_Connect_Click);
             // 
             // UI_toolStripStatusLabel_Colour
             // 
@@ -98,15 +108,6 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(96, 19);
             this.toolStripStatusLabel1.Text = "Bytes Received: -";
             // 
-            // UI_toolStripSplitLabel_Connect
-            // 
-            this.UI_toolStripSplitLabel_Connect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.UI_toolStripSplitLabel_Connect.Image = ((System.Drawing.Image)(resources.GetObject("UI_toolStripSplitLabel_Connect.Image")));
-            this.UI_toolStripSplitLabel_Connect.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.UI_toolStripSplitLabel_Connect.Name = "UI_toolStripSplitLabel_Connect";
-            this.UI_toolStripSplitLabel_Connect.Size = new System.Drawing.Size(61, 19);
-            this.UI_toolStripSplitLabel_Connect.Text = "Connect...";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -117,8 +118,9 @@
             this.Name = "Form1";
             this.Text = "Line Drawer Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             this.UI_StatusStrip.ResumeLayout(false);
             this.UI_StatusStrip.PerformLayout();
             this.ResumeLayout(false);

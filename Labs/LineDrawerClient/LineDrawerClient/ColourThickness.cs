@@ -12,11 +12,13 @@ namespace LineDrawerClient
 {
     public delegate void delVoidColor(Color x);
     public delegate void delVoidInt(int x);
+    public delegate void delVoidByte(byte x);
 
     public partial class ColourThickness : Form
     {
         public delVoidColor ChangeColour = null;
         public delVoidInt ChangeThickness = null;
+        public delVoidByte ChangeAlpha = null;
 
         public ColourThickness()
         {
@@ -38,6 +40,12 @@ namespace LineDrawerClient
                 //Invoke the callback
                 Invoke(ChangeColour, UI_colorDialog.Color);
             }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            UI_label_OpacityValue.Text = trackBar1.Value.ToString();
+            Invoke(ChangeAlpha, (byte)trackBar1.Value);
         }
     }
 }
