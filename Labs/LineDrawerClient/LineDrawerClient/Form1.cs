@@ -147,6 +147,8 @@ namespace LineDrawerClient
                 string mag = "";
                 switch (magnitude)
                 {
+                    case 0:
+                        break;
                     case 1:
                         mag = "K";
                         break;

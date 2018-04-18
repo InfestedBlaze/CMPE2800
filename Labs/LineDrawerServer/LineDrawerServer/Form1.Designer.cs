@@ -43,9 +43,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.UI_toolStripStatusLabel_TotalBytes,
             this.UI_toolStripStatusLabel_TotalFrames});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 390);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 389);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(316, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(484, 22);
             this.statusStrip1.TabIndex = 0;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -69,7 +69,7 @@
             this.UI_dataGridView_Clients.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.UI_dataGridView_Clients.Location = new System.Drawing.Point(13, 12);
             this.UI_dataGridView_Clients.Name = "UI_dataGridView_Clients";
-            this.UI_dataGridView_Clients.Size = new System.Drawing.Size(291, 375);
+            this.UI_dataGridView_Clients.Size = new System.Drawing.Size(459, 374);
             this.UI_dataGridView_Clients.TabIndex = 1;
             // 
             // timer_Update
@@ -82,7 +82,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(316, 412);
+            this.ClientSize = new System.Drawing.Size(484, 411);
             this.Controls.Add(this.UI_dataGridView_Clients);
             this.Controls.Add(this.statusStrip1);
             this.Name = "Form1";

@@ -103,7 +103,7 @@ public class Connection
 
     private void ThreadReading()
     {
-        byte[] buffer = new byte[50];
+        byte[] buffer = new byte[2048];
         MemoryStream ms = new MemoryStream();
 
         //Ensure that we don't timeout on receiving
