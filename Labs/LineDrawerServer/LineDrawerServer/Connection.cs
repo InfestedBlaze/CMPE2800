@@ -33,7 +33,7 @@ public class Connection
     public Connection(Socket inSock, delVoidConnectionString DisconnectFunc, delVoidString ErrorFunc, delVoidLineSegment OutputLine)
     {
         connection = inSock;
-        address = connection.LocalEndPoint;
+        address = connection.RemoteEndPoint;
         Disconnect = DisconnectFunc;
         ErrorOccurred = ErrorFunc;
         OutputLineSeg = OutputLine;
@@ -214,10 +214,12 @@ public class Connection
             }
             else
             {
+                LineSegment temp;
                 lock (RxLineSegments)
                 {
-                    OutputLineSeg(RxLineSegments.Dequeue());
+                    temp = RxLineSegments.Dequeue();
                 }
+                OutputLineSeg(temp);
             }
         }
     }
