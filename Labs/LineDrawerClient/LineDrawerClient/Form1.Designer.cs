@@ -52,7 +52,7 @@
             this.toolStripStatusLabel1});
             this.UI_StatusStrip.Location = new System.Drawing.Point(0, 537);
             this.UI_StatusStrip.Name = "UI_StatusStrip";
-            this.UI_StatusStrip.Size = new System.Drawing.Size(634, 24);
+            this.UI_StatusStrip.Size = new System.Drawing.Size(734, 24);
             this.UI_StatusStrip.TabIndex = 0;
             this.UI_StatusStrip.Text = "statusStrip1";
             // 
@@ -112,7 +112,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(634, 561);
+            this.ClientSize = new System.Drawing.Size(734, 561);
             this.Controls.Add(this.UI_StatusStrip);
             this.MinimumSize = new System.Drawing.Size(650, 600);
             this.Name = "Form1";

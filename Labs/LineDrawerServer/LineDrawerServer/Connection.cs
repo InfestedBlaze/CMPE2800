@@ -210,7 +210,7 @@ public class Connection
 
             if(objCount == 0)
             {
-                Thread.Sleep(0);
+                Thread.Sleep(3);
             }
             else
             {

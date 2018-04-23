@@ -16,7 +16,6 @@ namespace LineDrawerServer
     public partial class Form1 : Form
     {
         private delegate void delVoidSocket(Socket x);
-        private delegate void delVoidVoid();
 
         private Socket listenerSocket = null;
         private List<Connection> clientList = new List<Connection>();
@@ -116,12 +115,19 @@ namespace LineDrawerServer
         private void SendLinesThread()
         {
             LineSegment sendLine;
+            int queueCount;
             while (true)
             {
-                if (lines.Count == 0)
-                    continue;
-                
                 lock (lines)
+                    queueCount = lines.Count;
+
+                if (queueCount == 0)
+                {
+                    Thread.Sleep(3);
+                    continue;
+                }
+
+                lock(lines)
                     sendLine = lines.Dequeue();
 
                 lock (clientList)
