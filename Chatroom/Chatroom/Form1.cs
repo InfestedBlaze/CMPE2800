@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Sockets;
@@ -14,11 +15,13 @@ namespace Chatroom
     public partial class Form1 : Form
     {
         //If we are a client, this is our TCP connection
-        TcpClient user;
+        ClientConnection user;
 
         //If we are a server, this is our listener and clients
         TcpListener tcpListener;
-        List<TcpClient> clientList = new List<TcpClient>();
+        List<ClientConnection> clientList = new List<ClientConnection>();
+
+        Queue<string> messages = new Queue<string>();
 
         public Form1()
         {
@@ -42,8 +45,12 @@ namespace Chatroom
                 tcpListener.Start();
                 tcpListener.BeginAcceptTcpClient(AcceptListen, null);
                 
+                //Disable the host/join buttons
                 UI_toolStripMenuItem_Host.Enabled = false;
                 UI_ToolStripMenuItem_Join.Enabled = false;
+                //Enable the send button
+                UI_button_Send.Enabled = true;
+                //Display our role
                 Text = "Chatroom: Server";
             }
             catch(Exception err)
@@ -58,7 +65,7 @@ namespace Chatroom
             try
             {
                 //Accept the client and add it to our client list
-                TcpClient temp = tcpListener.EndAcceptTcpClient(ar);
+                ClientConnection temp = new ClientConnection(tcpListener.EndAcceptTcpClient(ar));
                 tcpListener.Stop();
                 lock (clientList)
                     clientList.Add(temp);
@@ -92,8 +99,12 @@ namespace Chatroom
                 user.EndConnect(ar);
                 Invoke(new Action(() =>
                 {
+                    //Disable the host/join buttons
                     UI_toolStripMenuItem_Host.Enabled = false;
                     UI_ToolStripMenuItem_Join.Enabled = false;
+                    //Enable the send button
+                    UI_button_Send.Enabled = true;
+                    //Display our role
                     Text = "Chatroom: Client";
                 }));
             }
@@ -106,12 +117,12 @@ namespace Chatroom
         //We are a user, sending a string to the server
         private void UserSend(string message)
         {
-            //Send it to the server
+            user.Send(message);
         }
         //We are a user, receiving a string from the server
         private void UserReceive()
         {
-
+            
         }
 
         //We are a server, sending a string to all the users
@@ -120,9 +131,11 @@ namespace Chatroom
             //Add message to the board
             AddToChat("Server", message);
             //Send it to all the clients
+            lock (clientList)
+                clientList.ForEach(client => client.Send(message));
         }
         //We are a server, receiving a string from the user
-        private void ServerReceive()
+        private void ServerReceive(TcpClient client)
         {
 
         }
@@ -171,7 +184,7 @@ namespace Chatroom
 
         private void UI_button_Send_Click(object sender, EventArgs e)
         {
-            if (user != null && user.Connected)
+            if (user != null)
             {
                 UserSend(UI_textBox_Input.Text);
             }
