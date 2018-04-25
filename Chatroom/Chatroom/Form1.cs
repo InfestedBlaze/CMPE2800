@@ -52,17 +52,6 @@ namespace Chatroom
                 //Listen for a new TCP Client
                 tcpListener.Start();
                 tcpListener.BeginAcceptTcpClient(AcceptListen, null);
-                
-                //Disable the host/join buttons
-                UI_toolStripMenuItem_Host.Enabled = false;
-                UI_ToolStripMenuItem_Join.Enabled = false;
-                //Display our role
-                Text = "Chatroom: Server";
-                ourRole = Role.Server;
-                //Start reading from our clients
-                reading = new Thread(ServerReceive);
-                reading.IsBackground = true;
-                reading.Start();
             }
             catch
             {
@@ -140,6 +129,7 @@ namespace Chatroom
             string mess;
             while (true)
             {
+                //Grab all the messages
                 while ((mess = user.nextMessage) != null)
                 {
                     lock (messages)
@@ -168,7 +158,11 @@ namespace Chatroom
             string mess;
             while (true)
             {
-                foreach(ClientConnection client in clientList.ToList())
+                List<ClientConnection> temp;
+                lock (clientList)
+                    temp = clientList.ToList();
+
+                foreach (ClientConnection client in temp)
                 {
                     //If the client is dead
                     if(!client.alive)
@@ -179,7 +173,7 @@ namespace Chatroom
                     }
 
                     //Transfer all the messages from the user queue
-                    while ((mess = user.nextMessage) != null)
+                    while ((mess = client.nextMessage) != null)
                     {
                         lock (messages)
                             messages.Enqueue(mess);
@@ -200,7 +194,8 @@ namespace Chatroom
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if(user != null) user.Dispose();
-            clientList.ForEach(client => client.Dispose());
+            lock(clientList)
+                clientList.ForEach(client => client.Dispose());
         }
 
         //Button to host or join, will disable both on success
@@ -210,7 +205,19 @@ namespace Chatroom
             {
                 if(sc.ShowDialog() == DialogResult.OK)
                 {
+                    //make a listener on the port selected
                     tcpListener = new TcpListener(System.Net.IPAddress.Any, sc.Port);
+
+                    //Disable the host/join buttons
+                    UI_toolStripMenuItem_Host.Enabled = false;
+                    UI_ToolStripMenuItem_Join.Enabled = false;
+                    //Display our role
+                    Text = "Chatroom: Server";
+                    ourRole = Role.Server;
+                    //Start reading from our clients
+                    reading = new Thread(ServerReceive);
+                    reading.IsBackground = true;
+                    reading.Start();
                     StartListen();
                 }
             }
