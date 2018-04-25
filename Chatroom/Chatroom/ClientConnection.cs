@@ -15,7 +15,17 @@ namespace Chatroom
         private bool continueRead;
         public bool alive { get; private set; }
 
-        public Queue<string> messages;
+        private Queue<string> messages;
+        public string nextMessage
+        {
+            get
+            {
+                if (messages.Count > 0)
+                    return messages.Dequeue();
+                else
+                    return null;
+            }
+        }
 
         public ClientConnection(TcpClient tcpClient)
         {
@@ -63,7 +73,7 @@ namespace Chatroom
                 else
                 {
                     //Wait for some info to be available
-                    Thread.Sleep(5);
+                    Thread.Sleep(2);
                 }
             }
 

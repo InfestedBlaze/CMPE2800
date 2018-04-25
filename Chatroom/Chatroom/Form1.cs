@@ -137,14 +137,19 @@ namespace Chatroom
         //We are a user, receiving a string from the server
         private void UserReceive()
         {
+            string mess;
             while (true)
             {
-                //Transfer all the messages from the user queue
-                while (user.messages.Count > 0)
-                    messages.Enqueue(user.messages.Dequeue());
+                while ((mess = user.nextMessage) != null)
+                {
+                    lock (messages)
+                        messages.Enqueue(mess);
+                }
+
                 //Write them to our screen
                 while(messages.Count > 0)
-                    Invoke(new delVoidString(AddToChat), messages.Dequeue());
+                    lock(messages)
+                        Invoke(new delVoidString(AddToChat), messages.Dequeue());
             }
         }
 
@@ -160,27 +165,30 @@ namespace Chatroom
         //We are a server, receiving a string from the user
         private void ServerReceive()
         {
+            string mess;
             while (true)
             {
-                foreach(ClientConnection cc in clientList.ToList())
+                foreach(ClientConnection client in clientList.ToList())
                 {
-                    //haven't made a connection yet
-                    if (cc == null) continue;
-
                     //If the client is dead
-                    if(!cc.alive)
+                    if(!client.alive)
                     {
-                        clientList.Remove(cc);
+                        lock(clientList)
+                            clientList.Remove(client);
                         continue;
                     }
 
                     //Transfer all the messages from the user queue
-                    while (cc.messages.Count > 0)
-                        messages.Enqueue(cc.messages.Dequeue());
+                    while ((mess = user.nextMessage) != null)
+                    {
+                        lock (messages)
+                            messages.Enqueue(mess);
+                    }
                     //Write them to our screen
                     while (messages.Count > 0)
                     {
-                        Invoke(new delVoidString(ServerSend), messages.Dequeue());
+                        lock(messages)
+                            Invoke(new delVoidString(ServerSend), messages.Dequeue());
                     }
                 }
             }
@@ -207,6 +215,7 @@ namespace Chatroom
                 }
             }
         }
+
         private void UI_toolStripMenuItem_Join_Click(object sender, EventArgs e)
         {
             using (ClientConnect cc = new ClientConnect())
