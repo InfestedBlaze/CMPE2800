@@ -15,7 +15,7 @@ namespace Chatroom
     public partial class Form1 : Form
     {
         delegate void delVoidString(string i);
-
+        
         enum Role { Waiting, Server, Client}
         Role ourRole = Role.Waiting;
 
@@ -31,6 +31,8 @@ namespace Chatroom
         //Thread to read all the messages and write them to the screen
         Thread reading;
 
+        //Form functions---------------------------------------------------------------------------------------
+
         public Form1()
         {
             InitializeComponent();
@@ -42,7 +44,71 @@ namespace Chatroom
             UI_richTextBox_Display.Text += $"{message}\n";
         }
 
-        //Tcp Functions-----------------------------------------------------------
+        //Shutdown all of the clients
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (user != null) user.Dispose();
+            lock (clientList)
+                clientList.ForEach(client => client.Dispose());
+        }
+
+        //Button to host or join, will disable both on success
+        private void UI_toolStripMenuItem_Host_Click(object sender, EventArgs e)
+        {
+            using (ServerConnect sc = new ServerConnect())
+            {
+                if (sc.ShowDialog() == DialogResult.OK)
+                {
+                    //make a listener on the port selected
+                    tcpListener = new TcpListener(System.Net.IPAddress.Any, sc.Port);
+
+                    //Disable the host/join buttons
+                    UI_toolStripMenuItem_Host.Enabled = false;
+                    UI_ToolStripMenuItem_Join.Enabled = false;
+                    //Display our role
+                    Text = "Chatroom: Server";
+                    ourRole = Role.Server;
+                    //Start reading from our clients
+                    reading = new Thread(ServerReceive);
+                    reading.IsBackground = true;
+                    reading.Start();
+                    StartListen();
+                }
+            }
+        }
+        private void UI_toolStripMenuItem_Join_Click(object sender, EventArgs e)
+        {
+            using (ClientConnect cc = new ClientConnect())
+            {
+                if (cc.ShowDialog() == DialogResult.OK)
+                {
+                    StartConnect(cc.IPAddress, cc.Port, new TcpClient());
+                }
+            }
+        }
+
+        //Send out the data
+        private void UI_button_Send_Click(object sender, EventArgs e)
+        {
+            //We have no role, return
+            if (ourRole == Role.Waiting) return;
+
+            //Check if we are a client or server
+            if (ourRole == Role.Client)
+            {
+                UserSend(UI_textBox_Input.Text);
+            }
+            else if (ourRole == Role.Server)
+            {
+                ServerSend(UI_textBox_Input.Text);
+            }
+
+            //Clear input box
+            UI_textBox_Input.Text = "";
+        }
+
+
+        //Tcp Functions---------------------------------------------------------------------------------
 
         //Listen functions are all the functionality of the TCPListener
         private void StartListen()
@@ -186,72 +252,6 @@ namespace Chatroom
                     }
                 }
             }
-        }
-
-        //Form functions-----------------------------------------------------------
-
-        //Shutdown all of the clients
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if(user != null) user.Dispose();
-            lock(clientList)
-                clientList.ForEach(client => client.Dispose());
-        }
-
-        //Button to host or join, will disable both on success
-        private void UI_toolStripMenuItem_Host_Click(object sender, EventArgs e)
-        {
-            using (ServerConnect sc = new ServerConnect())
-            {
-                if(sc.ShowDialog() == DialogResult.OK)
-                {
-                    //make a listener on the port selected
-                    tcpListener = new TcpListener(System.Net.IPAddress.Any, sc.Port);
-
-                    //Disable the host/join buttons
-                    UI_toolStripMenuItem_Host.Enabled = false;
-                    UI_ToolStripMenuItem_Join.Enabled = false;
-                    //Display our role
-                    Text = "Chatroom: Server";
-                    ourRole = Role.Server;
-                    //Start reading from our clients
-                    reading = new Thread(ServerReceive);
-                    reading.IsBackground = true;
-                    reading.Start();
-                    StartListen();
-                }
-            }
-        }
-
-        private void UI_toolStripMenuItem_Join_Click(object sender, EventArgs e)
-        {
-            using (ClientConnect cc = new ClientConnect())
-            {
-                if (cc.ShowDialog() == DialogResult.OK)
-                {
-                    StartConnect(cc.IPAddress, cc.Port, new TcpClient());
-                }
-            }
-        }
-
-        //Send out the data
-        private void UI_button_Send_Click(object sender, EventArgs e)
-        {
-            //We have no role, return
-            if (ourRole == Role.Waiting) return;
-
-            //Check if we are a client or server
-            if (ourRole == Role.Client)
-            {
-                UserSend(UI_textBox_Input.Text);
-            }
-            else if(ourRole == Role.Server)
-            {
-                ServerSend(UI_textBox_Input.Text);
-            }
-
-            //Clear input box
-            UI_textBox_Input.Text = "";
         }
     }
 }
