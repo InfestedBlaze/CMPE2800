@@ -49,7 +49,6 @@
             // UI_button_Send
             // 
             this.UI_button_Send.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.UI_button_Send.Enabled = false;
             this.UI_button_Send.Location = new System.Drawing.Point(472, 479);
             this.UI_button_Send.Name = "UI_button_Send";
             this.UI_button_Send.Size = new System.Drawing.Size(75, 23);

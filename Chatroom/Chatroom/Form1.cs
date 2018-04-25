@@ -14,6 +14,11 @@ namespace Chatroom
 {
     public partial class Form1 : Form
     {
+        delegate void delVoidString(string i);
+
+        enum Role { Waiting, Server, Client}
+        Role ourRole = Role.Waiting;
+
         //If we are a client, this is our TCP connection
         ClientConnection user;
 
@@ -21,17 +26,20 @@ namespace Chatroom
         TcpListener tcpListener;
         List<ClientConnection> clientList = new List<ClientConnection>();
 
+        //The messages we can put on our screen
         Queue<string> messages = new Queue<string>();
+        //Thread to read all the messages and write them to the screen
+        Thread reading;
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void AddToChat(string user, string message)
+        private void AddToChat(string message)
         {
             //Add the message to the chat box, with a new line appended
-            UI_richTextBox_Display.Text += $"{user}: {message}";
+            UI_richTextBox_Display.Text += $"{message}\n";
         }
 
         //Tcp Functions-----------------------------------------------------------
@@ -48,16 +56,17 @@ namespace Chatroom
                 //Disable the host/join buttons
                 UI_toolStripMenuItem_Host.Enabled = false;
                 UI_ToolStripMenuItem_Join.Enabled = false;
-                //Enable the send button
-                UI_button_Send.Enabled = true;
                 //Display our role
                 Text = "Chatroom: Server";
+                ourRole = Role.Server;
+                //Start reading from our clients
+                reading = new Thread(ServerReceive);
+                reading.IsBackground = true;
+                reading.Start();
             }
-            catch(Exception err)
+            catch
             {
                 //Failed to listen, don't need to do anything
-                Console.WriteLine(err.Message);
-                throw new NotImplementedException();
             }
         }
         private void AcceptListen(IAsyncResult ar)
@@ -72,7 +81,7 @@ namespace Chatroom
             }
             catch
             {
-                //Failed to Listen, don't need to do anything
+                //Failed to Listen, don't do anything
             }
 
             //Begin listening for more clients
@@ -80,12 +89,12 @@ namespace Chatroom
         }
         
         //Connect functions are the functionality of the TCPClient, user
-        private void StartConnect(string ipAddress, int port)
+        private void StartConnect(string ipAddress, int port, TcpClient connection)
         {
             try
             {
                 //Begin a connection attempt
-                user.BeginConnect(ipAddress, port, AcceptConnect, null);
+                connection.BeginConnect(ipAddress, port, AcceptConnect, connection);
             }
             catch
             {
@@ -96,16 +105,22 @@ namespace Chatroom
         {
             try
             {
-                user.EndConnect(ar);
+                TcpClient connection = (TcpClient)ar.AsyncState;
+                connection.EndConnect(ar);
                 Invoke(new Action(() =>
                 {
+                    //Assign our connection to our user field
+                    user = new ClientConnection(connection);
                     //Disable the host/join buttons
                     UI_toolStripMenuItem_Host.Enabled = false;
                     UI_ToolStripMenuItem_Join.Enabled = false;
-                    //Enable the send button
-                    UI_button_Send.Enabled = true;
                     //Display our role
                     Text = "Chatroom: Client";
+                    ourRole = Role.Client;
+                    //Start reading from the server
+                    reading = new Thread(UserReceive);
+                    reading.IsBackground = true;
+                    reading.Start();
                 }));
             }
             catch
@@ -122,40 +137,62 @@ namespace Chatroom
         //We are a user, receiving a string from the server
         private void UserReceive()
         {
-            
+            while (true)
+            {
+                //Transfer all the messages from the user queue
+                while (user.messages.Count > 0)
+                    messages.Enqueue(user.messages.Dequeue());
+                //Write them to our screen
+                while(messages.Count > 0)
+                    Invoke(new delVoidString(AddToChat), messages.Dequeue());
+            }
         }
 
         //We are a server, sending a string to all the users
         private void ServerSend(string message)
         {
             //Add message to the board
-            AddToChat("Server", message);
+            AddToChat(message);
             //Send it to all the clients
             lock (clientList)
                 clientList.ForEach(client => client.Send(message));
         }
         //We are a server, receiving a string from the user
-        private void ServerReceive(TcpClient client)
+        private void ServerReceive()
         {
+            while (true)
+            {
+                foreach(ClientConnection cc in clientList.ToList())
+                {
+                    //haven't made a connection yet
+                    if (cc == null) continue;
 
+                    //If the client is dead
+                    if(!cc.alive)
+                    {
+                        clientList.Remove(cc);
+                        continue;
+                    }
+
+                    //Transfer all the messages from the user queue
+                    while (cc.messages.Count > 0)
+                        messages.Enqueue(cc.messages.Dequeue());
+                    //Write them to our screen
+                    while (messages.Count > 0)
+                    {
+                        Invoke(new delVoidString(ServerSend), messages.Dequeue());
+                    }
+                }
+            }
         }
 
         //Form functions-----------------------------------------------------------
 
-        //Shutdown all of the Listeners and Clients
+        //Shutdown all of the clients
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
-            {
-                tcpListener.Stop();
-            }
-            catch
-            {
-                //Probably already disposed. Ignore it
-            }
-            //If we have a 
-            if(user != null) user.Close();
-            clientList.ForEach(client => client.Close());
+            if(user != null) user.Dispose();
+            clientList.ForEach(client => client.Dispose());
         }
 
         //Button to host or join, will disable both on success
@@ -176,23 +213,28 @@ namespace Chatroom
             {
                 if (cc.ShowDialog() == DialogResult.OK)
                 {
-                    user = new TcpClient();
-                    StartConnect(cc.IPAddress, cc.Port);
+                    StartConnect(cc.IPAddress, cc.Port, new TcpClient());
                 }
             }
         }
 
+        //Send out the data
         private void UI_button_Send_Click(object sender, EventArgs e)
         {
-            if (user != null)
+            //We have no role, return
+            if (ourRole == Role.Waiting) return;
+
+            //Check if we are a client or server
+            if (ourRole == Role.Client)
             {
                 UserSend(UI_textBox_Input.Text);
             }
-            else
+            else if(ourRole == Role.Server)
             {
                 ServerSend(UI_textBox_Input.Text);
             }
 
+            //Clear input box
             UI_textBox_Input.Text = "";
         }
     }
